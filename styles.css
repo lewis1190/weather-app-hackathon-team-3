@@ -18,3 +18,13 @@ body {
   #weather-card .card-body { flex-direction: column; gap: 0.5rem; text-align: center; }
   #weather-card .ms-auto { margin-left: 0 !important; }
 }
+
+footer.bg-light {
+  border-top: 1px solid rgba(0,0,0,0.05);
+}
+
+footer .container { font-size: 0.9rem; }
+
+@media (max-width: 576px) {
+  footer .container { text-align: center; }
+}

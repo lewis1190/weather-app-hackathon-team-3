@@ -1,6 +1,6 @@
 // Weather App JavaScript
 // Replace with your OpenWeatherMap API key
-const API_KEY = 'YOUR_API_KEY_HERE';
+const API_KEY = 'YOUR_OPENWEATHERMAP_API_KEY';
 
 let currentCity = null;
 let currentCoords = null;

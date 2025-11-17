@@ -1,0 +1,20 @@
+# go to repo
+Set-Location 'D:\vscode-projects\weather-app-hackathon-team-3'
+
+# switch to existing branch (or create and switch if it doesn't exist)
+# If branch exists:
+git switch veena-branch
+# If you need to create it from current branch:
+# git switch -c veena-branch
+
+# ensure changes are staged and committed
+git add -A
+git commit -m "Describe changes here"
+
+# update from remote (if the branch exists remotely)
+git pull --rebase origin veena-branch
+
+# push and set upstream if first push
+git push -u origin veena-branch
+# subsequent pushes can use:
+# git push

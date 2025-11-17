@@ -1,0 +1,20 @@
+body {
+  background: #f6f8fa;
+}
+
+.card {
+  border: 0;
+}
+
+#weather-icon {
+  filter: drop-shadow(0 2px 6px rgba(0,0,0,0.12));
+}
+
+#weather-card .card-body {
+  align-items: center;
+}
+
+@media (max-width: 576px) {
+  #weather-card .card-body { flex-direction: column; gap: 0.5rem; text-align: center; }
+  #weather-card .ms-auto { margin-left: 0 !important; }
+}

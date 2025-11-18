@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Location Detection Alert -->
+    <div id="locationAlert" class="alert alert-info alert-dismissible fade show d-none" role="alert">
+        <i class="fas fa-map-marker-alt"></i>
+        <span id="locationAlertText">Your location has been detected</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <!-- Severe Weather Alert -->
+    <div id="severeWeatherAlert" class="alert alert-danger alert-dismissible fade show d-none" role="alert">
+        <i class="fas fa-exclamation-triangle"></i>
+        <span id="severeWeatherText"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <div class="container-fluid min-vh-100 py-4">
+        <!-- Header -->
+        <header class="mb-4">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h1 class="display-4"><i class="fas fa-cloud-sun"></i> Weather App</h1>
+                </div>
+                <div class="col-md-6">
+                    <div class="d-flex gap-2 justify-content-md-end">
+                        <div class="btn-group" role="group">
+                            <input type="radio" class="btn-check" name="tempUnit" id="celsiusBtn" value="celsius" checked>
+                            <label class="btn btn-outline-primary" for="celsiusBtn">°C</label>
+
+                            <input type="radio" class="btn-check" name="tempUnit" id="fahrenheitBtn" value="fahrenheit">
+                            <label class="btn btn-outline-primary" for="fahrenheitBtn">°F</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Search Bar -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="input-group">
+                    <input
+                        type="text"
+                        class="form-control form-control-lg"
+                        id="searchInput"
+                        placeholder="Search for a city..."
+                        aria-label="Search for a city"
+                    >
+                    <button class="btn btn-primary btn-lg" id="searchBtn" type="button">
+                        <i class="fas fa-search"></i> Search
+                    </button>
+                </div>
+                <div id="searchError" class="alert alert-danger d-none mt-2" role="alert"></div>
+            </div>
+        </div>
+
+        <!-- Current Weather Card -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card weather-card h-100">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h2 id="locationName" class="card-title">Loading...</h2>
+                                <div class="weather-icon-large mb-3">
+                                    <i id="currentWeatherIcon" class="fas fa-cloud"></i>
+                                </div>
+                                <p id="weatherCondition" class="weather-condition">Loading...</p>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="temp-display">
+                                    <span id="currentTemp" class="temp-value">--</span>
+                                    <span id="tempUnitDisplay" class="temp-unit">°C</span>
+                                </div>
+                                <div class="feels-like-display mt-3">
+                                    <p>Feels like <span id="feelsLike">--</span><span id="feelsLikeUnit">°C</span></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Weather Details Grid -->
+                        <div class="row mt-4">
+                            <div class="col-sm-6 col-lg-3">
+                                <div class="weather-detail">
+                                    <i class="fas fa-tint"></i>
+                                    <p class="detail-label">Humidity</p>
+                                    <p id="humidity" class="detail-value">--%</p>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 col-lg-3">
+                                <div class="weather-detail">
+                                    <i class="fas fa-wind"></i>
+                                    <p class="detail-label">Wind Speed</p>
+                                    <p id="windSpeed" class="detail-value">-- km/h</p>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 col-lg-3">
+                                <div class="weather-detail">
+                                    <i class="fas fa-sun"></i>
+                                    <p class="detail-label">Sunrise</p>
+                                    <p id="sunrise" class="detail-value">--:--</p>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 col-lg-3">
+                                <div class="weather-detail">
+                                    <i class="fas fa-moon"></i>
+                                    <p class="detail-label">Sunset</p>
+                                    <p id="sunset" class="detail-value">--:--</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Air Quality Section -->
+        <div class="row mb-4">
+            <div class="col-lg-6">
+                <div class="card air-quality-card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="fas fa-leaf"></i> Air Quality Index (AQI)</h5>
+                        <div class="aqi-display">
+                            <div id="aqiValue" class="aqi-value aqi-good">--</div>
+                            <p id="aqiLevel" class="aqi-level">Loading...</p>
+                        </div>
+                        <div id="healthAdvice" class="health-advice mt-3"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="card uv-index-card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="fas fa-shield-alt"></i> UV Index</h5>
+                        <div class="uv-display">
+                            <div id="uvValue" class="uv-value uv-low">--</div>
+                            <p id="uvLevel" class="uv-level">Loading...</p>
+                        </div>
+                        <p class="uv-advice mt-3">Check UV protection recommendations</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 5-Day Forecast -->
+        <div class="row">
+            <div class="col-12">
+                <h3 class="mb-3"><i class="fas fa-calendar-days"></i> 5-Day Forecast</h3>
+                <div class="row" id="forecastContainer">
+                    <!-- Forecast cards will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

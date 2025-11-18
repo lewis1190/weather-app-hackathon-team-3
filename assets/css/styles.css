@@ -134,7 +134,7 @@ main.container { max-width: var(--max-width); }
   border-bottom-right-radius: 8px;
 }
 
-#search-btn { min-width: 90px;}
+#search-btn { min-width: 90px; }
 
 #weather-card {
   background: linear-gradient(180deg, rgba(255,255,255,0.8), rgba(255,255,255,0.95));

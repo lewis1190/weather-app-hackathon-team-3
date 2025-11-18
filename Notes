@@ -3,7 +3,7 @@ Set-Location 'D:\vscode-projects\weather-app-hackathon-team-3'
 
 # switch to existing branch (or create and switch if it doesn't exist)
 # If branch exists:
-git switch veena-branch
+git switch working-branch
 # If you need to create it from current branch:
 # git switch -c veena-branch
 

@@ -1,6 +1,7 @@
 // Weather App JavaScript
 // Replace with your OpenWeatherMap API key
-const API_KEY = 'YOUR_OPENWEATHERMAP_API_KEY';
+// Lewis API Key - Replace with your own - 0bcd555b9f589fa92e927350a8fed8e4
+const API_KEY = '0bcd555b9f589fa92e927350a8fed8e4';
 
 let currentCity = null;
 let currentCoords = null;

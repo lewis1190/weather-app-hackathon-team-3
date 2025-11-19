@@ -19,8 +19,6 @@ document.addEventListener('DOMContentLoaded', () => {
   let currentCoords = null;
   let autoRefreshTimer = null;
 
-  updateForecastUI(mockForecastData);
-
   function showAlert(message, type = 'danger', timeout) {
     const container = document.getElementById('alert-container');
     container.innerHTML = `

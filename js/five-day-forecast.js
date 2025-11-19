@@ -46,7 +46,7 @@ export function updateForecastUI(forecastData) {
     const pop = Math.round((weather.pop || 0) * 100); // Probability of precipitation
 
     const card = document.createElement('div');
-    card.className = 'col '; // col-sm-6 col-md-4
+    card.className = 'col';
     card.innerHTML = `
         <div class="card forecast-card shadow-sm h-100 w-100">
           <div class="card-body">

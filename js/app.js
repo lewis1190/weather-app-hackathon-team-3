@@ -84,12 +84,13 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
     try {
-      const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${API_KEY}`;
-      const data = await fetchWeatherJson(url);
-      currentCity = data.name;
+      const weatherCoordsUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${API_KEY}`;
+      const weatherCoordsData = await fetchWeatherJson(weatherCoordsUrl);
       currentCoords = { lat, lon };
-      updateUI(data);
-      refreshBtn;
+      const AQIUrl = `http://api.openweathermap.org/data/2.5/air_pollution?lat=${currentCoords.lat}&lon=${currentCoords.lon}&appid=${API_KEY}`;
+      const AQIData = await fetchWeatherJson(AQIUrl);
+      currentCity = weatherCoordsData.name;
+      updateUI(weatherCoordsData, AQIData);
     } catch (err) {
       showAlert(err.message || 'Unable to get weather by coords');
     }

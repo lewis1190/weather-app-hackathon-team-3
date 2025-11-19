@@ -1,163 +1,160 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Weather App</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-sA+e2Yk6t6bKGSW6vGk1kQYkQbQ6v5Q5vYhZ+8JQmPo=" crossorigin="" />
-    <link href="assets/css/styles.css" rel="stylesheet">
-  </head>
-  <body class="hero-bg">
-    <header>
-      <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
-        <div class="container">
-          <a class="navbar-brand" href="#">
-            <span class="brand-logo" aria-hidden="true">
-              <!-- Simple sun + cloud SVG logo -->
-              <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Weather logo">
-                <defs>
-                  <linearGradient id="g1" x1="0" x2="1">
-                    <stop offset="0" stop-color="#ffd166"/>
-                    <stop offset="1" stop-color="#ffaf4d"/>
-                  </linearGradient>
-                </defs>
-                <g>
-                  <circle cx="20" cy="20" r="8" fill="url(#g1)" />
-                  <g fill="#ffc857">
-                    <rect x="19" y="6" width="2" height="6" rx="1" transform="rotate(0 20 9)" />
-                    <rect x="19" y="34" width="2" height="6" rx="1" transform="rotate(0 20 37)" />
-                    <rect x="6" y="19" width="6" height="2" rx="1" transform="rotate(0 9 20)" />
-                    <rect x="34" y="19" width="6" height="2" rx="1" transform="rotate(0 37 20)" />
-                  </g>
-                  <path d="M46 34a8 8 0 0 0-8-8 9 9 0 0 0-1 .06A10 10 0 0 0 24 20a11 11 0 0 0-1 .06A8 8 0 1 0 26 44h20a6 6 0 0 0 0-12z" fill="#e6eef8"/>
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Weather App</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-sA+e2Yk6t6bKGSW6vGk1kQYkQbQ6v5Q5vYhZ+8JQmPo=" crossorigin="" />
+  <link href="assets/css/styles.css" rel="stylesheet">
+</head>
+
+<body class="hero-bg" style="background: linear-gradient(180deg, rgba(7,7,8,0.85) 0%, rgba(255,255,255,0.85) 100%), url('assets/images/hero1.png') center/cover no-repeat fixed;">
+  <header>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4 sticky-top">
+      <div class="container">
+        <a class="navbar-brand" href="#">
+          <span class="brand-logo" aria-hidden="true">
+            <!-- Simple sun + cloud SVG logo -->
+            <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Weather logo">
+              <defs>
+                <linearGradient id="g1" x1="0" x2="1">
+                  <stop offset="0" stop-color="#ffd166" />
+                  <stop offset="1" stop-color="#ffaf4d" />
+                </linearGradient>
+              </defs>
+              <g>
+                <circle cx="20" cy="20" r="8" fill="url(#g1)" />
+                <g fill="#ffc857">
+                  <rect x="19" y="6" width="2" height="6" rx="1" transform="rotate(0 20 9)" />
+                  <rect x="19" y="34" width="2" height="6" rx="1" transform="rotate(0 20 37)" />
+                  <rect x="6" y="19" width="6" height="2" rx="1" transform="rotate(0 9 20)" />
+                  <rect x="34" y="19" width="6" height="2" rx="1" transform="rotate(0 37 20)" />
                 </g>
-              </svg>
-            </span>
-            <span class="brand-text">TrueWeather</span>
-          </a>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu" aria-controls="navMenu" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-          </button>
-          <div class="collapse navbar-collapse" id="navMenu">
-            <ul class="navbar-nav ms-auto">
-              <li class="nav-item"><a class="nav-link active" aria-current="page" href="index.html">Forecast</a></li>
-              <li class="nav-item"><a class="nav-link" href="weather-card.html">Weather</a></li>
-            </ul>
-          </div>
-        </div>
-      </nav>
-    </header>
-
-    <main class="container mb-5">
-      <!-- Alerts: rendered here by js/app.js -->
-      <div class="row mb-3">
-        <div class="col-12">
-          <div id="alert-container"></div>
+                <path
+                  d="M46 34a8 8 0 0 0-8-8 9 9 0 0 0-1 .06A10 10 0 0 0 24 20a11 11 0 0 0-1 .06A8 8 0 1 0 26 44h20a6 6 0 0 0 0-12z"
+                  fill="#e6eef8" />
+              </g>
+            </svg>
+          </span>
+          <span class="brand-text">TrueWeather</span>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu"
+          aria-controls="navMenu" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navMenu">
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item"><a class="nav-link active" aria-current="page" href="index.html">Forecast</a></li>
+            <li class="nav-item"><a class="nav-link" href="weather-card.html">Weather</a></li>
+          </ul>
         </div>
       </div>
-      <div class="row mb-3">
-        <div class="col-12">
-          <div>
-            <div class="input-wrapper">
-              <div class="controls-row">
-                <div class="input-wrapper">
-                  <div class="input-group">
-                    <input id="city-input" type="text" class="form-control" placeholder="Enter city (e.g. London)" />
-                    <button id="search-btn" class="btn btn-primary">Search</button>
-                    <button id="loc-btn" class="btn btn-outline-secondary" title="Use my location">Use my location</button>
-                  </div>
-                  <div id="search-response" class="mt-2 small text-muted" aria-live="polite"></div>
+    </nav>
+  </header>
+
+  <main class="container mb-5">
+    <!-- Alerts: rendered here by js/app.js -->
+    <div class="row mb-3">
+      <div class="col-12">
+        <div id="alert-container"></div>
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-12">
+        <div>
+          <div class="input-wrapper">
+            <div class="controls-row">
+              <div class="input-wrapper">
+                <div class="input-group">
+                  <input id="city-input" type="text" class="form-control" placeholder="Enter city (e.g. London)" />
+                  <button id="search-btn" class="btn btn-primary">Search</button>
+                  <button id="loc-btn" class="btn btn-outline-secondary" title="Use my location">Use my
+                    location</button>
+                </div>
+                <div id="search-response" class="mt-2 small text-muted" aria-live="polite"></div>
+              </div>
+            </div>
+            <div class="row mt-2 mb-3">
+              <div class="col-12 d-flex flex-wrap align-items-center gap-2">
+                <button id="refresh-btn" class="btn btn-success">Update now</button>
+
+                <div class="form-check form-switch auto-wrap ms-2">
+                  <input class="form-check-input" type="checkbox" id="auto-refresh">
+                  <label class="form-check-label" for="auto-refresh">Auto-refresh</label>
+                </div>
+
+                <select id="refresh-interval" class="form-select w-auto ms-2">
+                  <option value="1">1m</option>
+                  <option value="5" selected>5m</option>
+                  <option value="15">15m</option>
+                </select>
+
+                <div class="form-check form-switch ms-2 heatmap-switch">
+                  <input class="form-check-input" type="checkbox" id="heatmap-toggle">
+                  <label class="form-check-label" for="heatmap-toggle">Heat map</label>
                 </div>
               </div>
-              <div class="row mt-2 mb-3">
-                <div class="col-12 d-flex flex-wrap align-items-center gap-2">
-                  <button id="refresh-btn" class="btn btn-success">Update now</button>
-
-                  <div class="form-check form-switch auto-wrap ms-2">
-                    <input class="form-check-input" type="checkbox" id="auto-refresh">
-                    <label class="form-check-label" for="auto-refresh">Auto-refresh</label>
-                  </div>
-
-                  <select id="refresh-interval" class="form-select w-auto ms-2">
-                    <option value="1">1m</option>
-                    <option value="5" selected>5m</option>
-                    <option value="15">15m</option>
-                  </select>
-
-                  <div class="form-check form-switch ms-2 heatmap-switch">
-                    <input class="form-check-input" type="checkbox" id="heatmap-toggle">
-                    <label class="form-check-label" for="heatmap-toggle">Heat map</label>
-                  </div>
-                </div>
-              </div>
-      </div>
-
-      
-
-      
-
-        
-
-            
-
-              <!-- Heatmap container (toggle to show/hide) -->
-      <div class="row mb-3">
-        <div class="col-12">
-          <div id="heatmap-container" class="d-none">
-            <canvas id="heatmap-canvas"></canvas>
-            <div class="heatmap-overlay muted">Demo heat map — toggle off to hide</div>
+            </div>
           </div>
-        </div>
+
+          <!-- Heatmap container (toggle to show/hide) -->
+          <div class="row mb-3">
+            <div class="col-12">
+              <div id="heatmap-container" class="d-none">
+                <canvas id="heatmap-canvas"></canvas>
+                <div class="heatmap-overlay muted">Demo heat map — toggle off to hide</div>
+              </div>
+            </div>
+          </div>
+
+
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-o9N1j7kP5Qp1t5YkQWfP8i6ix7Y5b7k3k4fFvT0v4r0=" crossorigin=""></script>
+  <script src="config.local.js"></script>
+  <script src="js/app.js"></script>
+
+  <footer class="bg-light py-3 mt-4">
+    <div class="container d-flex flex-column flex-md-row align-items-center gap-2">
+      <div class="text-muted">&copy; <span id="year"></span> TrueWeather</div>
+      <div class="ms-md-auto small">
+        <a href="https://openweathermap.org/" target="_blank" rel="noopener">Data: OpenWeatherMap</a>
       </div>
-
-      
-    </main>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-o9N1j7kP5Qp1t5YkQWfP8i6ix7Y5b7k3k4fFvT0v4r0=" crossorigin=""></script>
-    <script src="config.local.js"></script>
-    <script src="js/app.js"></script>
-
-    <footer class="bg-light py-3 mt-4">
-      <div class="container d-flex flex-column flex-md-row align-items-center gap-2">
-        <div class="text-muted">&copy; <span id="year"></span> Weather App</div>
-        <div class="ms-md-auto small">
-          <a href="https://openweathermap.org/" target="_blank" rel="noopener">Data: OpenWeatherMap</a>
-        </div>
-      </div>
-    </footer>
-<script>document.getElementById('year').textContent = new Date().getFullYear();</script>
-		<script>
-			// If another page placed a pending alert into sessionStorage, show it here.
-			(function () {
-				try {
-					const raw = sessionStorage.getItem('pendingAlert');
-					if (!raw) return;
-					const obj = JSON.parse(raw);
-					// render into the alert container
-					const container = document.getElementById('alert-container');
-					if (container) {
-						container.innerHTML = `
+    </div>
+  </footer>
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script>
+    // If another page placed a pending alert into sessionStorage, show it here.
+    (function () {
+      try {
+        const raw = sessionStorage.getItem('pendingAlert');
+        if (!raw) return;
+        const obj = JSON.parse(raw);
+        // render into the alert container
+        const container = document.getElementById('alert-container');
+        if (container) {
+          container.innerHTML = `
 							<div class="alert alert-${obj.type || 'danger'} alert-dismissible fade show" role="alert">
 								${obj.message}
 								<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 							</div>`;
-						if (obj.timeout && obj.timeout > 0) {
-							setTimeout(() => { container.innerHTML = ''; }, obj.timeout);
-						}
-					}
-					// clear it so it doesn't reappear
-					sessionStorage.removeItem('pendingAlert');
-				} catch (e) {
-					console.warn('Failed to display pending alert', e);
-				}
-			})();
-		</script>
-    <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="https://unpkg.com/leaflet@1.9.4  </script>
-  <script src="config.local.js"></script>
-  </body>
+          if (obj.timeout && obj.timeout > 0) {
+            setTimeout(() => { container.innerHTML = ''; }, obj.timeout);
+          }
+        }
+        // clear it so it doesn't reappear
+        sessionStorage.removeItem('pendingAlert');
+      } catch (e) {
+        console.warn('Failed to display pending alert', e);
+      }
+    })();
+  </script>
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+</body>
 
 </html>

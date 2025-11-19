@@ -35,8 +35,8 @@ body.hero-bg {
 
 /* Style for prominent paragraph when hero background is enabled */
 .hero-lead {
-  color: #ffffff;
-  text-shadow: 0 2px 6px rgba(0,0,0,0.55);
+  color: #0f0d0d;
+  text-shadow: 0 2px 16px rgba(0,0,0,0.55);
   background: rgba(0,0,0,0.25);
   padding: 0.6rem 0.9rem;
   border-radius: 8px;
@@ -199,11 +199,63 @@ main.container { max-width: var(--max-width); padding-bottom: 3rem; }
 }
 
 /* Layout: ensure footer sits at the bottom when page content is short */
-html, body { height: 100%; }
+html, body { height: auto; }
 body { display: flex; flex-direction: column; min-height: 100vh; }
 main.container { flex: 1 0 auto; }
 footer { margin-top: auto; }
 
 /* Utility */
 .muted { color: var(--muted); }
+
+/* 5-day forecast card styles */
+.forecast-card {
+  background: rgba(255,255,255,0.9);
+  border-radius: 10px;
+  box-shadow: 0 6px 18px rgba(15,23,42,0.06);
+  min-width: 120px;
+  max-width: 180px;
+  text-align: center;
+}
+.forecast-card img { display: block; margin: 0 auto 6px; }
+.forecast-card .small { text-transform: capitalize; }
+
+/* Ensure the inline search response fits within the main container */
+#search-response {
+  display: block;
+  max-width: var(--max-width);
+  margin: 0.35rem auto 0;
+  text-align: center;
+  word-break: break-word;
+}
+
+/* Forecast container: keep cards wrapped and centered within main */
+#forecast-5day {
+  align-items: stretch;
+  justify-content: flex-start;
+}
+@media (max-width: 768px) {
+  #forecast-5day { justify-content: center; }
+}
+
+/* Sticky navbar styling (applies when nav uses Bootstrap's sticky-top) */
+.navbar.sticky-top {
+  position: sticky; /* ensure fallback */
+  top: 0;
+  z-index: 1030;
+  box-shadow: 0 4px 12px rgba(15,23,42,0.08);
+  backdrop-filter: saturate(120%) blur(4px);
+}
+
+/* Prevent page content from being hidden under the sticky nav on small viewports */
+main.container { padding-top: 0.75rem; }
+
+/* Make the forecast/hero image responsive: scale to container but cap width */
+#site-logo {
+  display: block;
+  width: 100%;
+  max-width: 520px;
+  height: auto;
+  margin-left: auto;
+  margin-right: auto;
+}
 

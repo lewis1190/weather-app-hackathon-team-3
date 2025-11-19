@@ -133,13 +133,82 @@ function ensureWeatherCardExists() {
   const controls = document.querySelector('.controls-row');
   const insertAfter = controls ? controls.closest('.row') : null;
   const markup = `\n    <div class="row mb-3">\n      <div class="col-12">\n        <div id="weather-card" class="card shadow-sm">\n          <div class="card-body d-flex gap-4 align-items-center">\n            <img id="weather-icon" src="assets/images/logo1.png" alt="icon" width="96" height="96">\n            <div>\n              <h3 id="weather-city" class="card-title mb-0">City, Country</h3>\n              <div id="weather-desc" class="text-muted">--</div>\n              <h1 id="weather-temp" class="display-4 mb-0">--°C</h1>\n              <div class="small text-muted" id="last-updated">Last updated: --</div>\n            </div>\n            <div class="ms-auto text-end">\n              <div>Humidity: <span id="weather-humidity">--</span>%</div>\n              <div>Wind: <span id="weather-wind">--</span> m/s</div>\n            </div>\n          </div>\n        </div>\n      </div>\n    </div>\n  `;
+  // Add a 5-day forecast container right after the weather card
+  const forecastWrap = `\n    <div class="row">\n      <div class="col-12">\n        <div id="forecast-5day" class="d-flex flex-wrap gap-3 mt-3"></div>\n      </div>\n    </div>\n  `;
   if (insertAfter && insertAfter.parentNode) {
-    insertAfter.insertAdjacentHTML('afterend', markup);
+    insertAfter.insertAdjacentHTML('afterend', markup + forecastWrap);
   } else {
     // fallback: append to main
     const main = document.querySelector('main') || document.body;
-    main.insertAdjacentHTML('beforeend', markup);
+    main.insertAdjacentHTML('beforeend', markup + forecastWrap);
   }
+}
+
+// Build forecast URL for OpenWeatherMap 5-day/3-hour endpoint
+function buildForecastUrl(city) {
+  if (!city) throw new Error('City required for forecast');
+  if (/^https?:\/\//i.test(API_KEY)) {
+    // If API_KEY is a template URL, try to use it for forecast if possible
+    let tpl = API_KEY;
+    if (tpl.includes('{city}')) {
+      tpl = tpl.replace(/\{city\}/g, encodeURIComponent(city));
+      return tpl + (tpl.includes('?') ? '&' : '?') + 'units=metric';
+    }
+    // otherwise fall through to normal construction
+  }
+  return `https://api.openweathermap.org/data/2.5/forecast?q=${encodeURIComponent(city)}&units=metric&appid=${encodeURIComponent(API_KEY)}`;
+}
+
+async function getForecastByCity(city) {
+  try {
+    const url = buildForecastUrl(city);
+    const data = await fetchWeatherJson(url);
+    render5DayForecast(data);
+  } catch (err) {
+    console.warn('Failed to fetch 5-day forecast', err);
+  }
+}
+
+function render5DayForecast(forecastData) {
+  if (!forecastData || !forecastData.list) return;
+  // Group forecast entries by date string YYYY-MM-DD
+  const groups = {};
+  forecastData.list.forEach(item => {
+    const d = new Date(item.dt * 1000);
+    const key = d.toISOString().slice(0,10);
+    groups[key] = groups[key] || [];
+    groups[key].push(item);
+  });
+  // Sort dates and take up to 5 days
+  const dates = Object.keys(groups).sort().slice(0,5);
+  const container = document.getElementById('forecast-5day');
+  if (!container) return;
+  container.innerHTML = '';
+  dates.forEach(dateStr => {
+    const entries = groups[dateStr];
+    // pick midday entry if available
+    let rep = entries.find(e => new Date(e.dt * 1000).getHours() === 12) || entries[Math.floor(entries.length/2)];
+    let min = Infinity, max = -Infinity;
+    entries.forEach(e => { min = Math.min(min, e.main.temp_min); max = Math.max(max, e.main.temp_max); });
+    if (!isFinite(min)) min = rep.main.temp;
+    if (!isFinite(max)) max = rep.main.temp;
+    const dayName = new Date(dateStr).toLocaleDateString(undefined, { weekday: 'short' });
+    const icon = rep.weather && rep.weather[0] && rep.weather[0].icon ? rep.weather[0].icon : '';
+    const desc = rep.weather && rep.weather[0] && rep.weather[0].description ? rep.weather[0].description : '';
+
+    const el = document.createElement('div');
+    el.className = 'forecast-card p-3 text-center';
+    el.style.minWidth = '120px';
+    el.style.flex = '1 0 140px';
+    el.innerHTML = `
+      <div class="fw-bold mb-2">${dayName}</div>
+      <div class="mb-2">${ icon ? `<img src="https://openweathermap.org/img/wn/${icon}@2x.png" width="56" height="56" alt="${desc}">` : '' }</div>
+      <div class="small text-muted mb-2">${desc}</div>
+      <div class="h5 mb-0">${Math.round(max)}°</div>
+      <div class="text-muted">${Math.round(min)}°</div>
+    `;
+    container.appendChild(el);
+  });
 }
 
 function initMap() {
@@ -257,6 +326,8 @@ async function getWeatherByCity(city) {
     currentCity = data.name;
     currentCoords = { lat: data.coord.lat, lon: data.coord.lon };
     updateUI(data);
+    // also fetch and render the 5-day forecast for this city
+    try { await getForecastByCity(data.name || city); } catch (e) { /* non-fatal */ }
   } catch (err) {
     showAlert(err.message || 'Unable to get weather');
   }

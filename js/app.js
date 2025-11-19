@@ -127,6 +127,21 @@ function updateUI(data) {
   }
 }
 
+// Ensure the weather card exists on the current page; create it dynamically if missing
+function ensureWeatherCardExists() {
+  if (document.getElementById('weather-card')) return;
+  const controls = document.querySelector('.controls-row');
+  const insertAfter = controls ? controls.closest('.row') : null;
+  const markup = `\n    <div class="row mb-3">\n      <div class="col-12">\n        <div id="weather-card" class="card shadow-sm">\n          <div class="card-body d-flex gap-4 align-items-center">\n            <img id="weather-icon" src="assets/images/logo1.png" alt="icon" width="96" height="96">\n            <div>\n              <h3 id="weather-city" class="card-title mb-0">City, Country</h3>\n              <div id="weather-desc" class="text-muted">--</div>\n              <h1 id="weather-temp" class="display-4 mb-0">--°C</h1>\n              <div class="small text-muted" id="last-updated">Last updated: --</div>\n            </div>\n            <div class="ms-auto text-end">\n              <div>Humidity: <span id="weather-humidity">--</span>%</div>\n              <div>Wind: <span id="weather-wind">--</span> m/s</div>\n            </div>\n          </div>\n        </div>\n      </div>\n    </div>\n  `;
+  if (insertAfter && insertAfter.parentNode) {
+    insertAfter.insertAdjacentHTML('afterend', markup);
+  } else {
+    // fallback: append to main
+    const main = document.querySelector('main') || document.body;
+    main.insertAdjacentHTML('beforeend', markup);
+  }
+}
+
 function initMap() {
   try {
     map = L.map('map', { preferCanvas: true }).setView([20, 0], 2);
@@ -294,13 +309,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Guarded event attachments so js/app.js can safely run on pages without the controls
   if (searchBtn) {
-    searchBtn.addEventListener('click', () => {
+    searchBtn.addEventListener('click', async () => {
       const city = cityInput ? cityInput.value.trim() : '';
-      if (!city) { showAlert('Please enter a city name', 'warning'); return; }
-      // On any page, perform the search and show the weather card inline when possible
+      const respEl = document.getElementById('search-response');
+      if (!city) {
+        showAlert('Please enter a city name', 'warning');
+        if (respEl) respEl.textContent = '';
+        return;
+      }
+      // Show immediate feedback
+      if (respEl) respEl.textContent = `Searching for "${city}"...`;
+      // Ensure card exists and run the search
       try {
-        getWeatherByCity(city);
+        ensureWeatherCardExists();
+        await getWeatherByCity(city);
+        if (respEl) {
+          respEl.textContent = `Showing weather for ${city}`;
+          setTimeout(() => { if (respEl) respEl.textContent = ''; }, 4000);
+        }
       } catch (e) {
+        const msg = (e && e.message) ? e.message : 'Search failed';
+        if (respEl) respEl.textContent = `Error: ${msg}`;
         console.warn('Search failed', e);
       }
     });

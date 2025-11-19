@@ -28,6 +28,11 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Optional hero background image. Add the class `hero-bg` to the <body> to enable. */
+body.hero-bg {
+  background: linear-gradient(180deg, rgba(7, 7, 8, 0.85) 0%, rgba(255,255,255,0.85) 100%), url("../images/hero1.png") center/cover no-repeat fixed;
+}
+
 main.container { max-width: var(--max-width); }
 
 .navbar-brand { font-weight: 600; letter-spacing: 0.2px; }
@@ -52,6 +57,13 @@ main.container { max-width: var(--max-width); }
 .controls-row .btn { white-space: nowrap; }
 .controls-row .form-check { margin: 0; white-space: nowrap; }
 .controls-row select { flex: 0 0 auto; }
+
+/* Make certain control labels/buttons use white text for visibility on dark hero */
+#loc-btn { color: #fff; }
+.form-check-label[for="auto-refresh"],
+.form-check-label[for="heatmap-toggle"] {
+  color: #fff;
+}
 
 /* Small screens: allow wrapping to avoid overflow */
 @media (max-width: 420px) {
@@ -166,6 +178,12 @@ main.container { max-width: var(--max-width); }
   #weather-card .card-body { padding: 1rem; flex-direction: column; }
   .weather-right { text-align: center; width:100%; }
 }
+
+/* Layout: ensure footer sits at the bottom when page content is short */
+html, body { height: 100%; }
+body { display: flex; flex-direction: column; min-height: 100vh; }
+main.container { flex: 1 0 auto; }
+footer { margin-top: auto; }
 
 /* Utility */
 .muted { color: var(--muted); }

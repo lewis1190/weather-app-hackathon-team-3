@@ -68,10 +68,10 @@ document.addEventListener('DOMContentLoaded', () => {
         city
       )}&units=metric&appid=${API_KEY}`;
       const weatherData = await fetchWeatherJson(weatherUrl);
-      const AQIUrl = `http://api.openweathermap.org/data/2.5/air_pollution?q=${encodeURIComponent(city)}&appid=${API_KEY}`;
+      currentCoords = { lat: weatherData.coord.lat, lon: weatherData.coord.lon };
+      const AQIUrl = `http://api.openweathermap.org/data/2.5/air_pollution?lat=${currentCoords.lat}&lon=${currentCoords.lon}&appid=${API_KEY}`;
       const AQIData = await fetchWeatherJson(AQIUrl);
       currentCity = weatherData.name;
-      currentCoords = { lat: weatherData.coord.lat, lon: weatherData.coord.lon };
       updateUI(weatherData, AQIData);
     } catch (err) {
       showAlert(err.message || 'Unable to get weather');
@@ -114,7 +114,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  
+
   // ############# Event listeners #############
   function searchBtnHandler() {
     refreshBtn.disabled = true;

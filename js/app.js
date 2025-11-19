@@ -44,6 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('weather-humidity').textContent = weatherData.main.humidity;
     document.getElementById('weather-wind').textContent = weatherData.wind?.speed ?? '';
     document.getElementById('weather-air-quality-index').textContent = AQIData.list[0].main.aqi || '';
+    // document.getElementById('weather-uv-index').textContent = weatherData.current.uvi || '';
 
     const icon = weatherData.weather?.[0]?.icon;
 
@@ -84,13 +85,13 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
     try {
-      const weatherCoordsUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${API_KEY}`;
-      const weatherCoordsData = await fetchWeatherJson(weatherCoordsUrl);
+      const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${API_KEY}`;
+      const weatherData = await fetchWeatherJson(weatherUrl);
       currentCoords = { lat, lon };
       const AQIUrl = `http://api.openweathermap.org/data/2.5/air_pollution?lat=${currentCoords.lat}&lon=${currentCoords.lon}&appid=${API_KEY}`;
       const AQIData = await fetchWeatherJson(AQIUrl);
-      currentCity = weatherCoordsData.name;
-      updateUI(weatherCoordsData, AQIData);
+      currentCity = weatherData.name;
+      updateUI(weatherData, AQIData);
     } catch (err) {
       showAlert(err.message || 'Unable to get weather by coords');
     }

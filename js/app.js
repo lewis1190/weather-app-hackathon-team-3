@@ -1,5 +1,9 @@
+import { updateForecastUI } from './five-day-forecast.js';
+import { mockForecastData } from './mock-forecast-data.js';
+
 // MyForecast JavaScript
 // Replace with your OpenWeatherMap API key
+
 // Lewis API Key - Replace with your own - 0bcd555b9f589fa92e927350a8fed8e4
 document.addEventListener('DOMContentLoaded', () => {
   // UI Button Declarations
@@ -14,6 +18,8 @@ document.addEventListener('DOMContentLoaded', () => {
   let currentCity = null;
   let currentCoords = null;
   let autoRefreshTimer = null;
+
+  updateForecastUI(mockForecastData);
 
   function showAlert(message, type = 'danger', timeout) {
     const container = document.getElementById('alert-container');
@@ -57,6 +63,19 @@ document.addEventListener('DOMContentLoaded', () => {
     refreshBtn.disabled = false;
   }
 
+  async function getFiveDayForecastByCoords(lat, lon) {
+    if (!API_KEY || API_KEY === 'YOUR_API_KEY_HERE') {
+      return;
+    }
+    try {
+      const url = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&appid=${API_KEY}`;
+      const data = await fetchWeatherJson(url);
+      updateForecastUI(data);
+    } catch (err) {
+      console.error('Unable to get forecast:', err.message);
+    }
+  }
+
   async function getWeatherByCity(city) {
     if (!API_KEY || API_KEY === 'YOUR_API_KEY_HERE') {
       showAlert('Please set your OpenWeatherMap API key in js/app.js', 'warning', 8000);
@@ -70,6 +89,8 @@ document.addEventListener('DOMContentLoaded', () => {
       currentCity = data.name;
       currentCoords = { lat: data.coord.lat, lon: data.coord.lon };
       updateUI(data);
+      // Fetch 5-day forecast
+      getFiveDayForecastByCoords(currentCoords.lat, currentCoords.lon);
     } catch (err) {
       showAlert(err.message || 'Unable to get weather');
     }
@@ -86,12 +107,14 @@ document.addEventListener('DOMContentLoaded', () => {
       currentCity = data.name;
       currentCoords = { lat, lon };
       updateUI(data);
-      refreshBtn;
+      // Fetch 5-day forecast
+      getFiveDayForecastByCoords(lat, lon);
     } catch (err) {
       showAlert(err.message || 'Unable to get weather by coords');
     }
   }
 
+  // TODO: Move this down in the code with the rest of the event listeners.
   function startAutoRefresh(enabled) {
     const intervalSelect = document.getElementById('refresh-interval');
     const minutes = parseInt(intervalSelect.value, 10) || 5;

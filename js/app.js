@@ -35,20 +35,21 @@ document.addEventListener('DOMContentLoaded', () => {
     return res.json();
   }
 
-  function updateUI(data) {
+  function updateUI(weatherData, AQIData) {
     // Update weather card UI with fetched data
     const card = document.getElementById('weather-card');
-    document.getElementById('weather-city').textContent = `${data.name}, ${data.sys?.country || ''}`;
-    document.getElementById('weather-desc').textContent = data.weather?.[0]?.description || '';
-    document.getElementById('weather-temp').textContent = `${Math.round(data.main.temp)}°C`;
-    document.getElementById('weather-humidity').textContent = data.main.humidity;
-    document.getElementById('weather-wind').textContent = data.wind?.speed ?? '';
+    document.getElementById('weather-city').textContent = `${weatherData.name}, ${weatherData.sys?.country || ''}`;
+    document.getElementById('weather-desc').textContent = weatherData.weather?.[0]?.description || '';
+    document.getElementById('weather-temp').textContent = `${Math.round(weatherData.main.temp)}°C`;
+    document.getElementById('weather-humidity').textContent = weatherData.main.humidity;
+    document.getElementById('weather-wind').textContent = weatherData.wind?.speed ?? '';
+    document.getElementById('weather-air-quality-index').textContent = AQIData.list[0].main.aqi || ''};
 
-    const icon = data.weather?.[0]?.icon;
+    const icon = weatherData.weather?.[0]?.icon;
 
     if (icon) {
       document.getElementById('weather-icon').src = `https://openweathermap.org/img/wn/${icon}@2x.png`;
-      document.getElementById('weather-icon').alt = data.weather[0].description;
+      document.getElementById('weather-icon').alt = weatherData.weather[0].description;
     }
 
     document.getElementById('last-updated').textContent = `Last updated: ${new Date().toLocaleString()}`;
@@ -63,13 +64,15 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
     try {
-      const url = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(
+      const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(
         city
       )}&units=metric&appid=${API_KEY}`;
-      const data = await fetchWeatherJson(url);
-      currentCity = data.name;
-      currentCoords = { lat: data.coord.lat, lon: data.coord.lon };
-      updateUI(data);
+      const weatherData = await fetchWeatherJson(weatherUrl);
+      const AQIUrl = `http://api.openweathermap.org/data/2.5/air_pollution?q=${encodeURIComponent(city)}&appid=${API_KEY}`;
+      const AQIData = await fetchWeatherJson(AQIUrl);
+      currentCity = weatherData.name;
+      currentCoords = { lat: weatherData.coord.lat, lon: weatherData.coord.lon };
+      updateUI(weatherData, AQIData);
     } catch (err) {
       showAlert(err.message || 'Unable to get weather');
     }
@@ -111,6 +114,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  
   // ############# Event listeners #############
   function searchBtnHandler() {
     refreshBtn.disabled = true;

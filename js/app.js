@@ -7,7 +7,7 @@ let currentCity = null;
 let currentCoords = null;
 let autoRefreshTimer = null;
 
-function showAlert(message, type = 'danger', timeout = 5000) {
+function showAlert(message, type = 'danger', timeout) {
   const container = document.getElementById('alert-container');
   container.innerHTML = `
     <div class="alert alert-${type} alert-dismissible fade show" role="alert">

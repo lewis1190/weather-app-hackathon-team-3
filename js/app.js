@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('weather-temp').textContent = `${Math.round(weatherData.main.temp)}°C`;
     document.getElementById('weather-humidity').textContent = weatherData.main.humidity;
     document.getElementById('weather-wind').textContent = weatherData.wind?.speed ?? '';
-    document.getElementById('weather-air-quality-index').textContent = AQIData.list[0].main.aqi || ''};
+    document.getElementById('weather-air-quality-index').textContent = AQIData.list[0].main.aqi || '';
 
     const icon = weatherData.weather?.[0]?.icon;
 

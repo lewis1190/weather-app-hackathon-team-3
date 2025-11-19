@@ -1,4 +1,4 @@
-// Weather App JavaScript
+// MyForecast JavaScript
 // Replace with your OpenWeatherMap API key
 // Lewis API Key - Replace with your own - 0bcd555b9f589fa92e927350a8fed8e4
 const API_KEY = '0bcd555b9f589fa92e927350a8fed8e4';
@@ -14,7 +14,7 @@ function showAlert(message, type = 'danger', timeout) {
       ${message}
       <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>`;
-  if (timeout) setTimeout(() => container.innerHTML = '', timeout);
+  if (timeout) setTimeout(() => (container.innerHTML = ''), timeout);
 }
 
 async function fetchWeatherJson(url) {
@@ -33,7 +33,7 @@ function updateUI(data) {
   document.getElementById('weather-desc').textContent = data.weather?.[0]?.description || '';
   document.getElementById('weather-temp').textContent = `${Math.round(data.main.temp)}°C`;
   document.getElementById('weather-humidity').textContent = data.main.humidity;
-  document.getElementById('weather-wind').textContent = (data.wind?.speed ?? '') ;
+  document.getElementById('weather-wind').textContent = data.wind?.speed ?? '';
   const icon = data.weather?.[0]?.icon;
   if (icon) {
     document.getElementById('weather-icon').src = `https://openweathermap.org/img/wn/${icon}@2x.png`;
@@ -43,13 +43,15 @@ function updateUI(data) {
   card.classList.remove('d-none');
 }
 
-async function getWeatherByCity(city) {
+async function getWeatherByCity(city,) {
   if (!API_KEY || API_KEY === 'YOUR_API_KEY_HERE') {
     showAlert('Please set your OpenWeatherMap API key in js/app.js', 'warning', 8000);
     return;
   }
   try {
-    const url = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)}&units=metric&appid=${API_KEY}`;
+    const url = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(
+      city
+    )}&units=metric&appid=${API_KEY}`;
     const data = await fetchWeatherJson(url);
     currentCity = data.name;
     currentCoords = { lat: data.coord.lat, lon: data.coord.lon };
@@ -84,10 +86,11 @@ function startAutoRefresh(enabled) {
   }
   if (enabled) {
     autoRefreshTimer = setInterval(() => {
-      if (currentCity) getWeatherByCity(currentCity);
-      else if (currentCoords) getWeatherByCoords(currentCoords.lat, currentCoords.lon);
+      if (currentCity) {
+        getWeatherByCity(currentCity);
+      } else if (currentCoords) getWeatherByCoords(currentCoords.lat, currentCoords.lon);
     }, minutes * 60 * 1000);
-    showAlert(`Auto-refresh enabled (${minutes} minute${minutes>1?'s':''})`, 'info', 3000);
+    showAlert(`Auto-refresh enabled (${minutes} minute${minutes > 1 ? 's' : ''})`, 'info', 3000);
   } else {
     showAlert('Auto-refresh disabled', 'info', 2000);
   }
@@ -102,19 +105,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
   searchBtn.addEventListener('click', () => {
     const city = cityInput.value.trim();
-    if (!city) { showAlert('Please enter a city name', 'warning'); return; }
+    if (!city) {
+      showAlert('Please enter a city name', 'warning');
+      return;
+    }
     getWeatherByCity(city);
   });
 
-  cityInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') searchBtn.click(); });
+  cityInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') searchBtn.click();
+  });
 
   locBtn.addEventListener('click', () => {
-    if (!navigator.geolocation) { showAlert('Geolocation not supported by this browser'); return; }
-    navigator.geolocation.getCurrentPosition(pos => {
-      getWeatherByCoords(pos.coords.latitude, pos.coords.longitude);
-    }, err => {
-      showAlert('Unable to get your location: ' + (err.message || 'permission denied'));
-    });
+    if (!navigator.geolocation) {
+      showAlert('Geolocation not supported by this browser');
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        getWeatherByCoords(pos.coords.latitude, pos.coords.longitude);
+      },
+      (err) => {
+        showAlert('Unable to get your location: ' + (err.message || 'permission denied'));
+      }
+    );
   });
 
   refreshBtn.addEventListener('click', () => {

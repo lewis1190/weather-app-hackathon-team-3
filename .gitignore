@@ -1,5 +1,6 @@
 # Local config with sensitive keys
 config.local.js
+config.sample.js
 
 # Node modules (if any node work is added later)
 node_modules/

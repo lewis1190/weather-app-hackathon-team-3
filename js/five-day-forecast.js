@@ -21,8 +21,9 @@ export function updateForecastUI(forecastData) {
   for (let item of forecastData.list) {
     const date = new Date(item.dt * 1000);
     const dateStr = date.toDateString();
+    const hour = date.getHours();
 
-    if (!seenDates.includes(dateStr) && dailyForecasts.length < 5) {
+    if (!seenDates.includes(dateStr) && dailyForecasts.length < 5 && hour === 12) {
       seenDates.push(dateStr);
       dailyForecasts.push(item);
     }
@@ -50,7 +51,7 @@ export function updateForecastUI(forecastData) {
         <div class="card forecast-card shadow-sm h-100 w-100">
           <div class="card-body">
             <div class="fw-bold mb-2">${dateStr}</div>
-            <div class="text-muted small mb-2">${dayOfWeek}</div>
+            <div class="text-muted small mb-2">${dayOfWeek} @ 12pm</div>
             ${
               icon
                 ? `<img src="https://openweathermap.org/img/wn/${icon}@2x.png" alt="${description}" class="forecast-icon">`

@@ -113,12 +113,29 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ############# Event listeners #############
   function searchBtnHandler() {
+    refreshBtn.disabled = true;
     const city = cityInput.value.trim();
     if (!city) {
       showAlert('Please enter a city name', 'warning');
       return;
     }
     getWeatherByCity(city);
+  }
+
+  function locationBtnHandler() {
+    refreshBtn.disabled = true;
+    if (!navigator.geolocation) {
+      showAlert('Geolocation not supported by this browser');
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        getWeatherByCoords(pos.coords.latitude, pos.coords.longitude);
+      },
+      (err) => {
+        showAlert('Unable to get your location: ' + (err.message || 'permission denied'));
+      }
+    );
   }
 
   function refreshBtnHandler() {
@@ -135,24 +152,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (e.key === 'Enter') searchBtn.click();
   }
 
-  function locationBtnHandler() {
-    if (!navigator.geolocation) {
-      showAlert('Geolocation not supported by this browser');
-      return;
-    }
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        getWeatherByCoords(pos.coords.latitude, pos.coords.longitude);
-      },
-      (err) => {
-        showAlert('Unable to get your location: ' + (err.message || 'permission denied'));
-      }
-    );
-  }
-
   searchBtn.addEventListener('click', searchBtnHandler);
-  cityInput.addEventListener('keydown', cityInputKeydownHandler);
   locBtn.addEventListener('click', locationBtnHandler);
+  cityInput.addEventListener('keydown', cityInputKeydownHandler);
   refreshBtn.addEventListener('click', refreshBtnHandler);
   autoCheckbox.addEventListener('change', (e) => startAutoRefresh(e.target.checked));
   // ############# Event listeners #############

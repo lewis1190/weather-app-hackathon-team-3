@@ -14,6 +14,22 @@ body {
   align-items: center;
 }
 
+/* UV Index styles */
+
+
+/* Index = 1, green */
+
+/* Index = 2, light-green */
+
+/* Index = 3, yellow */
+
+/* Index = 4, orange */
+
+/* Index = 5, red */
+
+
+/* Media queries */
+
 @media (max-width: 576px) {
   #weather-card .card-body { flex-direction: column; gap: 0.5rem; text-align: center; }
   #weather-card .ms-auto { margin-left: 0 !important; }

@@ -43,6 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('weather-temp').textContent = `${Math.round(data.main.temp)}°C`;
     document.getElementById('weather-humidity').textContent = data.main.humidity;
     document.getElementById('weather-wind').textContent = data.wind?.speed ?? '';
+    document.getElementById('weather-feels-like').textContent = Math.round(data.main.feels_like);
 
     const icon = data.weather?.[0]?.icon;
 

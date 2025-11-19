@@ -297,14 +297,11 @@ document.addEventListener('DOMContentLoaded', () => {
     searchBtn.addEventListener('click', () => {
       const city = cityInput ? cityInput.value.trim() : '';
       if (!city) { showAlert('Please enter a city name', 'warning'); return; }
-      // If we're on the main index page (root or index.html), route search to alert.html
-      const path = (location.pathname || '').toLowerCase();
-      const isIndex = path === '/' || path.endsWith('/index.html') || path === '';
-      if (isIndex) {
-        sessionStorage.setItem('pendingCity', city);
-        window.location.href = 'weather-card.html';
-      } else {
+      // On any page, perform the search and show the weather card inline when possible
+      try {
         getWeatherByCity(city);
+      } catch (e) {
+        console.warn('Search failed', e);
       }
     });
   }

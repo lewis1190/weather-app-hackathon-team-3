@@ -29,55 +29,21 @@
             </span>
             <span class="brand-text">Weather App</span>
           </a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu" aria-controls="navMenu" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navMenu">
+            <ul class="navbar-nav ms-auto">
+              <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+              <li class="nav-item"><a class="nav-link active" aria-current="page" href="weather-card.html">Weather</a></li>
+            </ul>
+          </div>
         </div>
       </nav>
     </header>
 
     <main class="container mb-5">
-      <div id="weather-card" class="card shadow-sm">
-        <div class="card-body d-flex gap-4 align-items-center">
-          <img id="weather-icon" src="assets/images/logo1.png" alt="icon" width="96" height="96">
-          <div>
-            <h3 id="weather-city" class="card-title mb-0">City, Country</h3>
-            <div id="weather-desc" class="text-muted">Clear sky</div>
-            <h1 id="weather-temp" class="display-4 mb-0">--°C</h1>
-            <div class="small text-muted" id="last-updated">Last updated: --</div>
-          </div>
-          <div class="ms-auto text-end">
-            <div>Humidity: <span id="weather-humidity">--</span>%</div>
-            <div>Wind: <span id="weather-wind">--</span> m/s</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Hourly and Daily forecast sections (populated by js/app.js) -->
-      <div class="row mt-4">
-        <div class="col-12">
-          <div id="hourly-forecast" class="card mb-3">
-            <div class="card-header">Hourly Forecast</div>
-            <div class="card-body">
-              <div class="small text-muted mb-2">Hourly data will appear here after a successful search.</div>
-              <div id="hourly-list" class="d-flex gap-2 overflow-auto" style="min-height:64px">
-                <!-- Example item structure JS can append: .hour-item -->
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="col-12">
-          <div id="daily-forecast" class="card">
-            <div class="card-header">Daily Forecast</div>
-            <div class="card-body">
-              <div class="small text-muted mb-2">Daily summary will appear here after a successful search.</div>
-              <div id="daily-list">
-                <!-- Example item structure JS can append: .day-item -->
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <p class="lead">This page is a standalone weather card. Navigate back to the <a href="index.html">home</a> page to access the full map and controls.</p>
     </main>
 
     <footer class="bg-light py-3 mt-4">

@@ -43,7 +43,7 @@ function updateUI(data) {
   card.classList.remove('d-none');
 }
 
-async function getWeatherByCity(city,) {
+async function getWeatherByCity(city) {
   if (!API_KEY || API_KEY === 'YOUR_API_KEY_HERE') {
     showAlert('Please set your OpenWeatherMap API key in js/app.js', 'warning', 8000);
     return;

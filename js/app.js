@@ -1,5 +1,4 @@
 import { updateForecastUI } from './five-day-forecast.js';
-import { mockWeatherData, mockForecastData } from './mock-data.js';
 import { saveLocation, removeLocation, isLocationSaved } from './save-location.js';
 
 // MyForecast JavaScript
@@ -21,9 +20,6 @@ document.addEventListener('DOMContentLoaded', () => {
   let currentCountry = null;
   let currentCoords = null;
   let autoRefreshTimer = null;
-
-  updateUI(mockWeatherData);
-  updateForecastUI(mockForecastData);
 
   // Check for lat/lon query parameters and fetch weather if provided
   const params = new URLSearchParams(window.location.search);

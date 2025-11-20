@@ -25,6 +25,14 @@ document.addEventListener('DOMContentLoaded', () => {
   updateUI(mockWeatherData);
   updateForecastUI(mockForecastData);
 
+  // Check for lat/lon query parameters and fetch weather if provided
+  const params = new URLSearchParams(window.location.search);
+  const queryLat = params.get('lat');
+  const queryLon = params.get('lon');
+  if (queryLat && queryLon) {
+    getWeatherByCoords(parseFloat(queryLat), parseFloat(queryLon));
+  }
+
   function showAlert(message, type = 'danger', timeout) {
     const container = document.getElementById('alert-container');
     container.innerHTML = `
@@ -149,7 +157,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const isSaved = isLocationSaved(currentCity, currentCountry);
     saveLocationBtn.textContent = isSaved ? 'Remove Favorite' : 'Save as Favorite';
     saveLocationBtn.classList.toggle('btn-outline-primary', !isSaved);
-    saveLocationBtn.classList.toggle('btn-danger', isSaved);
+    saveLocationBtn.classList.toggle('btn-outline-danger', isSaved);
   }
 
   // ############# Event listeners #############

@@ -7,8 +7,6 @@ import { removeLocation } from '../js/save-location.js';
 // Lewis API Key - Replace with your own - 0bcd555b9f589fa92e927350a8fed8e4
 document.addEventListener('DOMContentLoaded', async () => {
   // UI Button Declarations
-  const saveLocationBtn = document.getElementById('save-location-btn');
-
   const API_KEY = '0bcd555b9f589fa92e927350a8fed8e4';
 
   const favoriteLocations = getSavedLocations();
@@ -47,6 +45,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     favoriteLocationsData.forEach((data) => {
       const card = document.createElement('div');
+      card.id = 'generated-card';
       card.className = 'col-8 col-sm-12';
       const weatherIcon = data.weather?.[0]?.icon;
       const iconHtml = weatherIcon
@@ -69,7 +68,9 @@ document.addEventListener('DOMContentLoaded', async () => {
               <button class="btn btn-outline-danger mt-2 w-100 remove-btn" data-city="${
                 data.name
               }" data-country="${data.sys?.country}">Remove</button>
-              <button class="btn btn-outline-primary mt-2 w-100 more-info-btn">More Info</button>
+              <button class="btn btn-outline-primary mt-2 w-100 more-info-btn" data-lat="${
+                data.coord.lat
+              }" data-lon="${data.coord.lon}">More Info</button>
             </div>
           </div>
         </div>
@@ -78,26 +79,14 @@ document.addEventListener('DOMContentLoaded', async () => {
       favoriteLocationsCards.appendChild(card);
     });
 
+    // Event listeners for dynamically created buttons
+    // Need to pass btn explicitly due to scope.
     document.querySelectorAll('.remove-btn').forEach((btn) => {
-      btn.addEventListener('click', (e) => {
-        const city = btn.dataset.city;
-        const country = btn.dataset.country;
-
-        if (confirm(`Are you sure you want to remove ${city}, ${country} from your favorites?`)) {
-          if (removeLocation(city, country)) {
-            e.target.closest('.col-8').remove();
-            showAlert('Location removed from favorites', 'success', 2000);
-          } else {
-            showAlert('Error removing location', 'danger');
-          }
-        }
-      });
+      btn.addEventListener('click', (e) => removeFavoriteHandler(e, btn));
     });
 
     document.querySelectorAll('.more-info-btn').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        // TODO: Implement more info functionality
-      });
+      btn.addEventListener('click', () => moreInfoHandler(btn));
     });
   }
 
@@ -110,23 +99,31 @@ document.addEventListener('DOMContentLoaded', async () => {
       const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${API_KEY}`;
       const data = await fetchWeatherJson(url);
       return data;
-      // Fetch 5-day forecast
     } catch (err) {
       showAlert(err.message || 'Unable to get weather by coords');
     }
   }
 
   // ############# Event listeners #############
-  // function refreshBtnHandler() {
-  //   if (currentCity) {
-  //     getWeatherByCity(currentCity);
-  //   } else if (currentCoords) {
-  //     getWeatherByCoords(currentCoords.lat, currentCoords.lon);
-  //   } else {
-  //     showAlert('No location to refresh. Search a city or use your location.', 'warning');
-  //   }
-  // }
+  function removeFavoriteHandler(event, btn) {
+    const city = btn.dataset.city;
+    const country = btn.dataset.country;
 
-  // refreshBtn.addEventListener('click', refreshBtnHandler);
+    if (confirm(`Are you sure you want to remove ${city}, ${country} from your favorites?`)) {
+      if (removeLocation(city, country)) {
+        // TODO: Risky, needs testing on mobile and touch devices!
+        event.target.closest('#generated-card').remove();
+        showAlert('Location removed from favorites', 'success', 2000);
+      } else {
+        showAlert('Error removing location', 'danger');
+      }
+    }
+  }
+
+  function moreInfoHandler(btn) {
+    const lat = btn.dataset.lat;
+    const lon = btn.dataset.lon;
+    window.location.href = `../index.html?lat=${lat}&lon=${lon}`;
+  }
   // ############# Event listeners #############
 });

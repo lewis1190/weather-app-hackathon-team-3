@@ -14,7 +14,7 @@ body {
   align-items: center;
 }
 
-/* AQI Index styles */
+/* AQI class styles */
 
 .aqi-1 { color: #28a745; } /* green */
 .aqi-2 { color: #8bc34a; } /* light-green */

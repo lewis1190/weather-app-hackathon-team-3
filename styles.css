@@ -8,6 +8,7 @@ body {
   background: #f6f8fa;
   display: flex;
   flex-direction: column;
+  font-family: 'Open Sans', sans-serif;
 }
 
 /* Ensures the footer remains at the bottom */

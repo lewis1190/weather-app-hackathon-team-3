@@ -44,12 +44,30 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('weather-humidity').textContent = weatherData.main.humidity;
     document.getElementById('weather-wind').textContent = weatherData.wind?.speed ?? '';
     // document.getElementById('weather-uv-index').textContent = weatherData.current.uvi || '';
-    document.getElementById('weather-air-quality-index').textContent = AQIData.list[0].main.aqi || '';
+    
+    switch (AQIData.list[0].main.aqi) {
+      case 1:
+        document.getElementById('weather-air-quality-index').textContent = "1 (Very Good)"
+        break;
+      case 2:
+        document.getElementById('weather-air-quality-index').textContent = "2 (Good)"
+        break;
+      case 3:
+        document.getElementById('weather-air-quality-index').textContent = "3 (Moderate)"
+        break;
+      case 4:
+        document.getElementById('weather-air-quality-index').textContent = "4 (Bad)"
+        break;
+      case 5:
+        document.getElementById('weather-air-quality-index').textContent = "5 (Very Bad)"
+        break;
+      default:
+        break;
+    }
 
     // Get colour from AQI value
     const AQIValue = AQIData.list[0].main.aqi || '';
     const AQIElement = document.getElementById('weather-air-quality-index');
-    AQIElement.textContent = AQIValue;
     
     // Remove any existing AQI classes
     AQIElement.className = '';

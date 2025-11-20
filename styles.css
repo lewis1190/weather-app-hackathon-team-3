@@ -1,26 +1,68 @@
+/* Global Styles  */
+html,
 body {
-  background: #f6f8fa;
+  height: 100%;
 }
 
+body {
+  background: #f6f8fa;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Ensures the footer remains at the bottom */
+main {
+  flex: 1;
+}
+
+/* Sticky Navbar */
+header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+}
+
+/* Makes up for the gap caused by the fixed navbar. */
+body {
+  padding-top: 5rem;
+}
+
+/* Current weather card styling */
 .card {
   border: 0;
 }
 
 #weather-icon {
-  filter: drop-shadow(0 2px 6px rgba(0,0,0,0.12));
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.12));
 }
 
-/* Current weather card styling */
 #weather-card .card-body {
   align-items: center;
 }
 
 /* AQI class styles */
-.aqi-1 { color: #28a745; } /* green */
-.aqi-2 { color: #8bc34a; } /* light-green */
-.aqi-3 { color: #ffc107; } /* yellow */
-.aqi-4 { color: #ff9800; } /* orange */
-.aqi-5 { color: #dc3545; } /* red */
+/* green */
+.aqi-1 {
+  color: #28a745;
+}
+/* light-green */
+.aqi-2 {
+  color: #8bc34a;
+}
+/* yellow */
+.aqi-3 {
+  color: #ffc107;
+}
+/* orange */
+.aqi-4 {
+  color: #ff9800;
+}
+/* red */
+.aqi-5 {
+  color: #dc3545;
+}
 
 /* Forecast card styling */
 .forecast-card {
@@ -41,24 +83,48 @@ body {
 .forecast-icon {
   width: 64px;
   height: 64px;
-  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
 }
 
 /* Footer Styling */
 footer.bg-light {
-  border-top: 1px solid rgba(0,0,0,0.05);
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
 }
 
-footer .container { font-size: 0.9rem; }
-footer { margin-top: auto; }
+footer .container {
+  font-size: 0.9rem;
+}
+footer {
+  margin-top: auto;
+  flex-shrink: 0;
+}
 /* Footer icon styles */
-.footer-links a { gap: 0.4rem; color: inherit; text-decoration: none; }
-.footer-icon { display: inline-block; flex: 0 0 18px; fill: currentColor; }
-.footer-links .sep { margin: 0 0.5rem; color: #999; }
+.footer-links a {
+  gap: 0.4rem;
+  color: inherit;
+  text-decoration: none;
+}
+.footer-icon {
+  display: inline-block;
+  flex: 0 0 18px;
+  fill: currentColor;
+}
+.footer-links .sep {
+  margin: 0 0.5rem;
+  color: #999;
+}
 
 /* Media queries */
 @media (max-width: 576px) {
-  #weather-card .card-body { flex-direction: column; gap: 0.5rem; text-align: center; }
-  #weather-card .ms-auto { margin-left: 0 !important; }
-  footer .container { text-align: center; }
+  #weather-card .card-body {
+    flex-direction: column;
+    gap: 0.5rem;
+    text-align: center;
+  }
+  #weather-card .ms-auto {
+    margin-left: 0 !important;
+  }
+  footer .container {
+    text-align: center;
+  }
 }

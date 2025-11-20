@@ -1,5 +1,8 @@
+import { updateForecastUI } from './five-day-forecast.js';
+
 // MyForecast JavaScript
 // Replace with your OpenWeatherMap API key
+
 // Lewis API Key - Replace with your own - 0bcd555b9f589fa92e927350a8fed8e4
 document.addEventListener('DOMContentLoaded', () => {
   // UI Button Declarations
@@ -38,28 +41,30 @@ document.addEventListener('DOMContentLoaded', () => {
   function updateUI(weatherData, AQIData) {
     // Update weather card UI with fetched data
     const card = document.getElementById('weather-card');
-    document.getElementById('weather-city').textContent = `${weatherData.name}, ${weatherData.sys?.country || ''}`;
+    document.getElementById('weather-city').textContent = `${weatherData.name}, ${
+      weatherData.sys?.country || ''
+    }`;
     document.getElementById('weather-desc').textContent = weatherData.weather?.[0]?.description || '';
     document.getElementById('weather-temp').textContent = `${Math.round(weatherData.main.temp)}°C`;
     document.getElementById('weather-humidity').textContent = weatherData.main.humidity;
     document.getElementById('weather-wind').textContent = weatherData.wind?.speed ?? '';
     // document.getElementById('weather-uv-index').textContent = weatherData.current.uvi || '';
-    
+
     switch (AQIData.list[0].main.aqi) {
       case 1:
-        document.getElementById('weather-air-quality-index').textContent = "1 (Very Good)"
+        document.getElementById('weather-air-quality-index').textContent = '1 (Very Good)';
         break;
       case 2:
-        document.getElementById('weather-air-quality-index').textContent = "2 (Good)"
+        document.getElementById('weather-air-quality-index').textContent = '2 (Good)';
         break;
       case 3:
-        document.getElementById('weather-air-quality-index').textContent = "3 (Moderate)"
+        document.getElementById('weather-air-quality-index').textContent = '3 (Moderate)';
         break;
       case 4:
-        document.getElementById('weather-air-quality-index').textContent = "4 (Bad)"
+        document.getElementById('weather-air-quality-index').textContent = '4 (Bad)';
         break;
       case 5:
-        document.getElementById('weather-air-quality-index').textContent = "5 (Very Bad)"
+        document.getElementById('weather-air-quality-index').textContent = '5 (Very Bad)';
         break;
       default:
         break;
@@ -68,7 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Get colour from AQI value
     const AQIValue = AQIData.list[0].main.aqi || '';
     const AQIElement = document.getElementById('weather-air-quality-index');
-    
+
     // Remove any existing AQI classes
     AQIElement.className = '';
     // Add the appropriate AQI color class
@@ -89,6 +94,19 @@ document.addEventListener('DOMContentLoaded', () => {
     refreshBtn.disabled = false;
   }
 
+  async function getFiveDayForecastByCoords(lat, lon) {
+    if (!API_KEY || API_KEY === 'YOUR_API_KEY_HERE') {
+      return;
+    }
+    try {
+      const url = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&appid=${API_KEY}`;
+      const data = await fetchWeatherJson(url);
+      updateForecastUI(data);
+    } catch (err) {
+      console.error('Unable to get forecast:', err.message);
+    }
+  }
+
   async function getWeatherByCity(city) {
     if (!API_KEY || API_KEY === 'YOUR_API_KEY_HERE') {
       showAlert('Please set your OpenWeatherMap API key in js/app.js', 'warning', 8000);
@@ -104,6 +122,9 @@ document.addEventListener('DOMContentLoaded', () => {
       const AQIData = await fetchWeatherJson(AQIUrl);
       currentCity = weatherData.name;
       updateUI(weatherData, AQIData);
+
+      // Fetch 5-day forecast
+      getFiveDayForecastByCoords(currentCoords.lat, currentCoords.lon);
     } catch (err) {
       showAlert(err.message || 'Unable to get weather');
     }
@@ -122,11 +143,15 @@ document.addEventListener('DOMContentLoaded', () => {
       const AQIData = await fetchWeatherJson(AQIUrl);
       currentCity = weatherData.name;
       updateUI(weatherData, AQIData);
+
+      // Fetch 5-day forecast
+      getFiveDayForecastByCoords(lat, lon);
     } catch (err) {
       showAlert(err.message || 'Unable to get weather by coords');
     }
   }
 
+  // TODO: Move this down in the code with the rest of the event listeners.
   function startAutoRefresh(enabled) {
     const intervalSelect = document.getElementById('refresh-interval');
     const minutes = parseInt(intervalSelect.value, 10) || 5;
@@ -145,7 +170,6 @@ document.addEventListener('DOMContentLoaded', () => {
       showAlert('Auto-refresh disabled', 'info', 2000);
     }
   }
-
 
   // ############# Event listeners #############
   function searchBtnHandler() {

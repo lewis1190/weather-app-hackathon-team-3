@@ -1,4 +1,6 @@
 import { updateForecastUI } from './five-day-forecast.js';
+import { mockWeatherData, mockForecastData } from './mock-data.js';
+import { saveLocation } from './save-location.js';
 
 // MyForecast JavaScript
 // Replace with your OpenWeatherMap API key
@@ -11,12 +13,17 @@ document.addEventListener('DOMContentLoaded', () => {
   const refreshBtn = document.getElementById('refresh-btn');
   const autoCheckbox = document.getElementById('auto-refresh');
   const cityInput = document.getElementById('city-input');
+  const saveLocationBtn = document.getElementById('save-location-btn');
 
   const API_KEY = '0bcd555b9f589fa92e927350a8fed8e4';
 
   let currentCity = null;
+  let currentCountry = null;
   let currentCoords = null;
   let autoRefreshTimer = null;
+
+  updateUI(mockWeatherData);
+  updateForecastUI(mockForecastData);
 
   function showAlert(message, type = 'danger', timeout) {
     const container = document.getElementById('alert-container');
@@ -84,6 +91,7 @@ document.addEventListener('DOMContentLoaded', () => {
       )}&units=metric&appid=${API_KEY}`;
       const data = await fetchWeatherJson(url);
       currentCity = data.name;
+      currentCountry = data.sys?.country;
       currentCoords = { lat: data.coord.lat, lon: data.coord.lon };
       updateUI(data);
       // Fetch 5-day forecast
@@ -102,6 +110,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${API_KEY}`;
       const data = await fetchWeatherJson(url);
       currentCity = data.name;
+      currentCountry = data.sys?.country;
       currentCoords = { lat, lon };
       updateUI(data);
       // Fetch 5-day forecast
@@ -172,10 +181,19 @@ document.addEventListener('DOMContentLoaded', () => {
     if (e.key === 'Enter') searchBtn.click();
   }
 
+  function saveLocationBtnHandler() {
+    if (!currentCity || !currentCoords.lat || !currentCoords.lon) {
+      showAlert('Please search for a location first', 'warning');
+      return;
+    }
+    saveLocation(currentCoords.lat, currentCoords.lon, currentCity, currentCountry);
+  }
+
   searchBtn.addEventListener('click', searchBtnHandler);
   locBtn.addEventListener('click', locationBtnHandler);
   cityInput.addEventListener('keydown', cityInputKeydownHandler);
   refreshBtn.addEventListener('click', refreshBtnHandler);
+  saveLocationBtn.addEventListener('click', saveLocationBtnHandler);
   autoCheckbox.addEventListener('change', (e) => startAutoRefresh(e.target.checked));
   // ############# Event listeners #############
 });

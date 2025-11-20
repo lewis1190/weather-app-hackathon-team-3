@@ -186,25 +186,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // TODO: Move this down in the code with the rest of the event listeners.
-  function startAutoRefresh(enabled) {
-    const minutes = parseInt(intervalSelect.value, 10) || 5;
-    if (autoRefreshTimer) {
-      clearInterval(autoRefreshTimer);
-      autoRefreshTimer = null;
-    }
-    if (enabled) {
-      autoRefreshTimer = setInterval(() => {
-        if (currentCity) {
-          getWeatherByCity(currentCity);
-        } else if (currentCoords) getWeatherByCoords(currentCoords.lat, currentCoords.lon);
-      }, minutes * 60 * 1000);
-      showAlert(`Auto-refresh enabled (${minutes} minute${minutes > 1 ? 's' : ''})`, 'info', 3000);
-    } else {
-      showAlert('Auto-refresh disabled', 'info', 2000);
-    }
-  }
-
   // Save locations UI logic
   function updateSaveButtonState() {
     if (!currentCity || !currentCountry) return;
@@ -279,11 +260,29 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  function autoRefreshSwitchHandler(event) {
+    const minutes = parseInt(intervalSelect.value, 10) || 5;
+    if (autoRefreshTimer) {
+      clearInterval(autoRefreshTimer);
+      autoRefreshTimer = null;
+    }
+    if (event.target.checked) {
+      autoRefreshTimer = setInterval(() => {
+        if (currentCity) {
+          getWeatherByCity(currentCity);
+        } else if (currentCoords) getWeatherByCoords(currentCoords.lat, currentCoords.lon);
+      }, minutes * 60 * 1000);
+      showAlert(`Auto-refresh enabled (${minutes} minute${minutes > 1 ? 's' : ''})`, 'info', 3000);
+    } else {
+      showAlert('Auto-refresh disabled', 'info', 2000);
+    }
+  }
+
   searchBtn.addEventListener('click', searchBtnHandler);
   locBtn.addEventListener('click', locationBtnHandler);
   cityInput.addEventListener('keydown', cityInputKeydownHandler);
   refreshBtn.addEventListener('click', refreshBtnHandler);
   saveLocationBtn.addEventListener('click', saveLocationBtnHandler);
-  autoCheckbox.addEventListener('change', (e) => startAutoRefresh(e.target.checked));
+  autoCheckbox.addEventListener('change', autoRefreshSwitchHandler);
   // ############# Event listeners #############
 });

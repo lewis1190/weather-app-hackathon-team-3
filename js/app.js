@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
     return res.json();
   }
 
-  function updateUI(weatherData, AQIData) {
+  function updateUI(weatherData, aqiData) {
     // Update weather card UI with fetched data
     const card = document.getElementById('weather-card');
     document.getElementById('weather-city').textContent = `${weatherData.name}, ${
@@ -62,35 +62,19 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('weather-wind').textContent = weatherData.wind?.speed ?? '';
     document.getElementById('weather-feels-like').textContent = Math.round(weatherData.main.feels_like);
 
-    switch (AQIData.list[0].main.aqi) {
-      case 1:
-        document.getElementById('weather-air-quality-index').textContent = '1 (Very Good)';
-        break;
-      case 2:
-        document.getElementById('weather-air-quality-index').textContent = '2 (Good)';
-        break;
-      case 3:
-        document.getElementById('weather-air-quality-index').textContent = '3 (Moderate)';
-        break;
-      case 4:
-        document.getElementById('weather-air-quality-index').textContent = '4 (Bad)';
-        break;
-      case 5:
-        document.getElementById('weather-air-quality-index').textContent = '5 (Very Bad)';
-        break;
-      default:
-        break;
-    }
+    const aqiElement = document.getElementById('weather-air-quality-index');
+    const aqiValue = aqiData.list[0].main.aqi || '';
 
-    // Get colour from AQI value
-    const AQIValue = AQIData.list[0].main.aqi || '';
-    const AQIElement = document.getElementById('weather-air-quality-index');
+    const aqiComment = ['Very Good', 'Good', 'Moderate', 'Bad', 'Very Bad'];
+    document.getElementById('weather-air-quality-index').textContent = `${aqiData.list[0].main.aqi} (${
+      aqiComment[aqiData.list[0].main.aqi - 1]
+    })`;
 
-    // Remove any existing AQI classes
-    AQIElement.className = '';
+    // Reset existing AQI classes
+    aqiElement.className = '';
     // Add the appropriate AQI color class
-    if (AQIValue >= 1 && AQIValue <= 5) {
-      AQIElement.classList.add(`aqi-${AQIValue}`);
+    if (aqiValue >= 1 && aqiValue <= 5) {
+      aqiElement.classList.add(`aqi-${aqiValue}`);
     }
 
     const icon = weatherData.weather?.[0]?.icon;

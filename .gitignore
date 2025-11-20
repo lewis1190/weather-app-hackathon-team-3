@@ -4,3 +4,4 @@ config.sample.js
 
 # Node modules (if any node work is added later)
 node_modules/
+test.js

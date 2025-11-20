@@ -43,8 +43,20 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('weather-temp').textContent = `${Math.round(weatherData.main.temp)}°C`;
     document.getElementById('weather-humidity').textContent = weatherData.main.humidity;
     document.getElementById('weather-wind').textContent = weatherData.wind?.speed ?? '';
-    document.getElementById('weather-air-quality-index').textContent = AQIData.list[0].main.aqi || '';
     // document.getElementById('weather-uv-index').textContent = weatherData.current.uvi || '';
+    document.getElementById('weather-air-quality-index').textContent = AQIData.list[0].main.aqi || '';
+
+    // Get colour from AQI value
+    const AQIValue = AQIData.list[0].main.aqi || '';
+    const AQIElement = document.getElementById('weather-air-quality-index');
+    AQIElement.textContent = AQIValue;
+    
+    // Remove any existing AQI classes
+    AQIElement.className = '';
+    // Add the appropriate AQI color class
+    if (AQIValue >= 1 && AQIValue <= 5) {
+      AQIElement.classList.add(`aqi-${AQIValue}`);
+    }
 
     const icon = weatherData.weather?.[0]?.icon;
 

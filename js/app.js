@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const autoCheckbox = document.getElementById('auto-refresh');
   const cityInput = document.getElementById('city-input');
   const saveLocationBtn = document.getElementById('save-location-btn');
+  const intervalSelect = document.getElementById('refresh-interval');
 
   const API_KEY = '0bcd555b9f589fa92e927350a8fed8e4';
 
@@ -101,8 +102,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById('last-updated').textContent = `Last updated: ${new Date().toLocaleString()}`;
     card.classList.remove('d-none');
-    const refreshBtn = document.getElementById('refresh-btn');
     refreshBtn.disabled = false;
+    autoCheckbox.disabled = false;
+    intervalSelect.disabled = false;
 
     updateSaveButtonState();
   }
@@ -186,7 +188,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // TODO: Move this down in the code with the rest of the event listeners.
   function startAutoRefresh(enabled) {
-    const intervalSelect = document.getElementById('refresh-interval');
     const minutes = parseInt(intervalSelect.value, 10) || 5;
     if (autoRefreshTimer) {
       clearInterval(autoRefreshTimer);
@@ -216,7 +217,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ############# Event listeners #############
   function searchBtnHandler() {
-    refreshBtn.disabled = true;
     const city = cityInput.value.trim();
     if (!city) {
       showAlert('Please enter a city name', 'warning');
@@ -226,7 +226,6 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function locationBtnHandler() {
-    refreshBtn.disabled = true;
     if (!navigator.geolocation) {
       showAlert('Geolocation not supported by this browser');
       return;

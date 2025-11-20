@@ -15,6 +15,13 @@ body {
   align-items: center;
 }
 
+/* AQI class styles */
+.aqi-1 { color: #28a745; } /* green */
+.aqi-2 { color: #8bc34a; } /* light-green */
+.aqi-3 { color: #ffc107; } /* yellow */
+.aqi-4 { color: #ff9800; } /* orange */
+.aqi-5 { color: #dc3545; } /* red */
+
 /* Forecast card styling */
 .forecast-card {
   transition: box-shadow 0.2s;
@@ -44,6 +51,7 @@ footer.bg-light {
 
 footer .container { font-size: 0.9rem; }
 
+/* Media queries */
 @media (max-width: 576px) {
   #weather-card .card-body { flex-direction: column; gap: 0.5rem; text-align: center; }
   #weather-card .ms-auto { margin-left: 0 !important; }

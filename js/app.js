@@ -38,20 +38,54 @@ document.addEventListener('DOMContentLoaded', () => {
     return res.json();
   }
 
-  function updateUI(data) {
+  function updateUI(weatherData, AQIData) {
     // Update weather card UI with fetched data
     const card = document.getElementById('weather-card');
-    document.getElementById('weather-city').textContent = `${data.name}, ${data.sys?.country || ''}`;
-    document.getElementById('weather-desc').textContent = data.weather?.[0]?.description || '';
-    document.getElementById('weather-temp').textContent = `${Math.round(data.main.temp)}°C`;
-    document.getElementById('weather-humidity').textContent = data.main.humidity;
-    document.getElementById('weather-wind').textContent = data.wind?.speed ?? '';
+    document.getElementById('weather-city').textContent = `${weatherData.name}, ${
+      weatherData.sys?.country || ''
+    }`;
+    document.getElementById('weather-desc').textContent = weatherData.weather?.[0]?.description || '';
+    document.getElementById('weather-temp').textContent = `${Math.round(weatherData.main.temp)}°C`;
+    document.getElementById('weather-humidity').textContent = weatherData.main.humidity;
+    document.getElementById('weather-wind').textContent = weatherData.wind?.speed ?? '';
+    // document.getElementById('weather-uv-index').textContent = weatherData.current.uvi || '';
 
-    const icon = data.weather?.[0]?.icon;
+    switch (AQIData.list[0].main.aqi) {
+      case 1:
+        document.getElementById('weather-air-quality-index').textContent = '1 (Very Good)';
+        break;
+      case 2:
+        document.getElementById('weather-air-quality-index').textContent = '2 (Good)';
+        break;
+      case 3:
+        document.getElementById('weather-air-quality-index').textContent = '3 (Moderate)';
+        break;
+      case 4:
+        document.getElementById('weather-air-quality-index').textContent = '4 (Bad)';
+        break;
+      case 5:
+        document.getElementById('weather-air-quality-index').textContent = '5 (Very Bad)';
+        break;
+      default:
+        break;
+    }
+
+    // Get colour from AQI value
+    const AQIValue = AQIData.list[0].main.aqi || '';
+    const AQIElement = document.getElementById('weather-air-quality-index');
+
+    // Remove any existing AQI classes
+    AQIElement.className = '';
+    // Add the appropriate AQI color class
+    if (AQIValue >= 1 && AQIValue <= 5) {
+      AQIElement.classList.add(`aqi-${AQIValue}`);
+    }
+
+    const icon = weatherData.weather?.[0]?.icon;
 
     if (icon) {
       document.getElementById('weather-icon').src = `https://openweathermap.org/img/wn/${icon}@2x.png`;
-      document.getElementById('weather-icon').alt = data.weather[0].description;
+      document.getElementById('weather-icon').alt = weatherData.weather[0].description;
     }
 
     document.getElementById('last-updated').textContent = `Last updated: ${new Date().toLocaleString()}`;
@@ -79,13 +113,16 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
     try {
-      const url = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(
+      const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(
         city
       )}&units=metric&appid=${API_KEY}`;
-      const data = await fetchWeatherJson(url);
-      currentCity = data.name;
-      currentCoords = { lat: data.coord.lat, lon: data.coord.lon };
-      updateUI(data);
+      const weatherData = await fetchWeatherJson(weatherUrl);
+      currentCoords = { lat: weatherData.coord.lat, lon: weatherData.coord.lon };
+      const AQIUrl = `http://api.openweathermap.org/data/2.5/air_pollution?lat=${currentCoords.lat}&lon=${currentCoords.lon}&appid=${API_KEY}`;
+      const AQIData = await fetchWeatherJson(AQIUrl);
+      currentCity = weatherData.name;
+      updateUI(weatherData, AQIData);
+
       // Fetch 5-day forecast
       getFiveDayForecastByCoords(currentCoords.lat, currentCoords.lon);
     } catch (err) {
@@ -99,11 +136,14 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
     try {
-      const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${API_KEY}`;
-      const data = await fetchWeatherJson(url);
-      currentCity = data.name;
+      const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${API_KEY}`;
+      const weatherData = await fetchWeatherJson(weatherUrl);
       currentCoords = { lat, lon };
-      updateUI(data);
+      const AQIUrl = `http://api.openweathermap.org/data/2.5/air_pollution?lat=${currentCoords.lat}&lon=${currentCoords.lon}&appid=${API_KEY}`;
+      const AQIData = await fetchWeatherJson(AQIUrl);
+      currentCity = weatherData.name;
+      updateUI(weatherData, AQIData);
+
       // Fetch 5-day forecast
       getFiveDayForecastByCoords(lat, lon);
     } catch (err) {

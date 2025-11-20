@@ -1,4 +1,5 @@
 import { updateForecastUI } from './five-day-forecast.js';
+import { convertSunTimeToDisplayTime } from './helper-functions.js';
 import { saveLocation, removeLocation, isLocationSaved } from './save-location.js';
 
 // TrueWeather JavaScript
@@ -40,6 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (timeout) setTimeout(() => (container.innerHTML = ''), timeout);
   }
 
+  // API Weather Fetching Functions
   async function fetchWeatherJson(url) {
     const res = await fetch(url);
     if (!res.ok) {
@@ -50,6 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
     return res.json();
   }
 
+  // UI Update Functions
   function updateUI(weatherData, aqiData) {
     // Update weather card UI with fetched data
     const card = document.getElementById('weather-card');
@@ -76,6 +79,14 @@ document.addEventListener('DOMContentLoaded', () => {
     if (aqiValue >= 1 && aqiValue <= 5) {
       aqiElement.classList.add(`aqi-${aqiValue}`);
     }
+
+    // Update sunrise and sunset times
+    document.getElementById('weather-sunrise').textContent = convertSunTimeToDisplayTime(
+      weatherData.sys?.sunrise
+    );
+    document.getElementById('weather-sunset').textContent = convertSunTimeToDisplayTime(
+      weatherData.sys?.sunset
+    );
 
     const icon = weatherData.weather?.[0]?.icon;
 
@@ -117,7 +128,7 @@ document.addEventListener('DOMContentLoaded', () => {
       )}&units=metric&appid=${API_KEY}`;
       const weatherData = await fetchWeatherJson(weatherUrl);
       currentCoords = { lat: weatherData.coord.lat, lon: weatherData.coord.lon };
-      const AQIUrl = `http://api.openweathermap.org/data/2.5/air_pollution?lat=${currentCoords.lat}&lon=${currentCoords.lon}&appid=${API_KEY}`;
+      const AQIUrl = `https://api.openweathermap.org/data/2.5/air_pollution?lat=${currentCoords.lat}&lon=${currentCoords.lon}&appid=${API_KEY}`;
       const AQIData = await fetchWeatherJson(AQIUrl);
       currentCity = weatherData.name;
       currentCountry = weatherData.sys?.country;
@@ -157,7 +168,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${API_KEY}`;
       const weatherData = await fetchWeatherJson(weatherUrl);
       currentCoords = { lat, lon };
-      const AQIUrl = `http://api.openweathermap.org/data/2.5/air_pollution?lat=${currentCoords.lat}&lon=${currentCoords.lon}&appid=${API_KEY}`;
+      const AQIUrl = `https://api.openweathermap.org/data/2.5/air_pollution?lat=${currentCoords.lat}&lon=${currentCoords.lon}&appid=${API_KEY}`;
       const AQIData = await fetchWeatherJson(AQIUrl);
       currentCity = weatherData.name;
       currentCountry = weatherData.sys?.country;

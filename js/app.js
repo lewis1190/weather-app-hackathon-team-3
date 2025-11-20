@@ -1,6 +1,6 @@
 // Weather App JavaScript
 // Default placeholder API key (replace locally).
-let API_KEY = 'YOUR_OPENWEATHERMAP_API_KEY';
+let API_KEY = '';
 // Allow override from a local config file (create `config.local.js` that sets `window.OPENWEATHER_API_KEY`)
 if (typeof window !== 'undefined' && window.OPENWEATHER_API_KEY) {
   API_KEY = window.OPENWEATHER_API_KEY;
@@ -72,6 +72,7 @@ let mapCanvas = null;
 let mapCanvasCtx = null;
 let mapHeatLayer = null;
 let mapOwmTiles = null;
+let lastForecastData = null; // cache the most recent forecast response
 
 function showAlert(message, type = 'danger', timeout = 5000) {
   // If the dedicated alert container exists on this page, render there.
@@ -137,12 +138,16 @@ function ensureWeatherCardExists() {
   const markup = `\n    <div class="row mb-3">\n      <div class="col-12">\n        <div id="weather-card" class="card shadow-sm">\n          <div class="card-body d-flex gap-4 align-items-center">\n            <img id="weather-icon" src="assets/images/logo1.png" alt="icon" width="96" height="96">\n            <div>\n              <h3 id="weather-city" class="card-title mb-0">City, Country</h3>\n              <div id="weather-desc" class="text-muted">--</div>\n              <h1 id="weather-temp" class="display-4 mb-0">--°C</h1>\n              <div class="small text-muted" id="last-updated">Last updated: --</div>\n            </div>\n            <div class="ms-auto text-end">\n              <div>Humidity: <span id="weather-humidity">--</span>%</div>\n              <div>Wind: <span id="weather-wind">--</span> m/s</div>\n            </div>\n          </div>\n        </div>\n      </div>\n    </div>\n  `;
   // Add a 5-day forecast container right after the weather card
   const forecastWrap = `\n    <div class="row">\n      <div class="col-12">\n        <div id="forecast-5day" class="d-flex flex-wrap gap-3 mt-3"></div>\n      </div>\n    </div>\n  `;
+  // hourly forecast container (hidden by default) — will be toggled by hourly/daily buttons
+  const hourlyWrap = `\n    <div class="row">\n      <div class="col-12">\n        <div id="forecast-hourly" class="d-flex gap-3 mt-3 overflow-auto" style="display:none;"></div>\n      </div>\n    </div>\n  `;
+  // weekly forecast container (hidden by default)
+  const weeklyWrap = `\n    <div class="row">\n      <div class="col-12">\n        <div id="forecast-weekly" class="d-flex flex-wrap gap-3 mt-3" style="display:none;"></div>\n      </div>\n    </div>\n  `;
   if (insertAfter && insertAfter.parentNode) {
-    insertAfter.insertAdjacentHTML('afterend', markup + forecastWrap);
+    insertAfter.insertAdjacentHTML('afterend', markup + forecastWrap + hourlyWrap + weeklyWrap);
   } else {
     // fallback: append to main
     const main = document.querySelector('main') || document.body;
-    main.insertAdjacentHTML('beforeend', markup + forecastWrap);
+    main.insertAdjacentHTML('beforeend', markup + forecastWrap + hourlyWrap + weeklyWrap);
   }
 }
 
@@ -165,14 +170,143 @@ async function getForecastByCity(city) {
   try {
     const url = buildForecastUrl(city);
     const data = await fetchWeatherJson(url);
+    // cache and render
+    lastForecastData = data;
     render5DayForecast(data);
+    return data;
   } catch (err) {
     console.warn('Failed to fetch 5-day forecast', err);
   }
 }
 
+function renderHourlyForecast(forecastData, hoursWindow = 12) {
+  if (!forecastData || !forecastData.list) return;
+  // Ensure containers exist
+  const container = document.getElementById('forecast-hourly');
+  const container5 = document.getElementById('forecast-5day');
+  if (container5) container5.style.display = 'none';
+  if (!container) return;
+  container.style.display = 'flex';
+  container.innerHTML = '';
+
+  const now = Math.floor(Date.now() / 1000);
+  const end = now + hoursWindow * 3600;
+  let entries = forecastData.list.filter(i => i.dt >= now && i.dt <= end);
+  if (!entries || entries.length === 0) {
+    // fallback: take the next up-to-8 entries from the list
+    entries = forecastData.list.slice(0, 8);
+  }
+
+  entries.forEach(item => {
+    const d = new Date(item.dt * 1000);
+    const timeLabel = d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
+    const icon = item.weather && item.weather[0] && item.weather[0].icon ? item.weather[0].icon : '';
+    const desc = item.weather && item.weather[0] && item.weather[0].description ? item.weather[0].description : '';
+    const temp = Math.round(item.main.temp);
+
+    const el = document.createElement('div');
+    el.className = 'forecast-card p-2 text-center';
+    el.style.minWidth = '110px';
+    el.style.flex = '0 0 auto';
+    el.innerHTML = `
+      <div class="fw-bold mb-1">${timeLabel}</div>
+      <div class="mb-1">${ icon ? `<img src=\"https://openweathermap.org/img/wn/${icon}@2x.png\" width=56 height=56 alt=\"${desc}\">` : '' }</div>
+      <div class="small text-muted mb-1">${desc}</div>
+      <div class="h5 mb-0">${temp}°</div>
+    `;
+    container.appendChild(el);
+  });
+  // update button active state
+  try {
+    const hourlyBtnEl = document.getElementById('hourlyButton');
+    const dailyBtnEl = document.getElementById('dailyButton');
+    if (hourlyBtnEl) { hourlyBtnEl.classList.add('active'); hourlyBtnEl.setAttribute('aria-pressed', 'true'); }
+    if (dailyBtnEl) { dailyBtnEl.classList.remove('active'); dailyBtnEl.setAttribute('aria-pressed', 'false'); }
+  } catch (e) { /* ignore */ }
+}
+
+// Build One Call (daily) URL for weekly forecast by coordinates
+function buildOneCallUrl(lat, lon) {
+  if (lat == null || lon == null) throw new Error('lat/lon required for onecall');
+  if (!hasValidApiKey()) throw new Error('API key required for One Call API');
+  return `https://api.openweathermap.org/data/2.5/onecall?lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(lon)}&exclude=minutely,hourly,alerts&units=metric&appid=${encodeURIComponent(API_KEY)}`;
+}
+
+async function getWeeklyByCoords(lat, lon) {
+  try {
+    const url = buildOneCallUrl(lat, lon);
+    const data = await fetchWeatherJson(url);
+    // note: One Call response shape differs from forecast — store under lastForecastData.weekly for caching
+    lastForecastData = lastForecastData || {};
+    lastForecastData.weekly = data;
+    renderWeeklyForecast(data);
+    return data;
+  } catch (err) {
+    console.warn('Failed to fetch weekly forecast', err);
+    throw err;
+  }
+}
+
+function renderWeeklyForecast(oneCallData) {
+  if (!oneCallData || !oneCallData.daily) return;
+  const container = document.getElementById('forecast-weekly');
+  const dailyContainer = document.getElementById('forecast-5day');
+  const hourlyContainer = document.getElementById('forecast-hourly');
+  if (dailyContainer) dailyContainer.style.display = 'none';
+  if (hourlyContainer) hourlyContainer.style.display = 'none';
+  if (!container) return;
+  container.style.display = 'flex';
+  container.innerHTML = '';
+
+  const days = oneCallData.daily.slice(0, 7);
+  days.forEach(day => {
+    const d = new Date(day.dt * 1000);
+    const dayName = d.toLocaleDateString(undefined, { weekday: 'short' });
+    const icon = day.weather && day.weather[0] && day.weather[0].icon ? day.weather[0].icon : '';
+    const desc = day.weather && day.weather[0] && day.weather[0].description ? day.weather[0].description : '';
+    const min = Math.round(day.temp.min);
+    const max = Math.round(day.temp.max);
+    const pop = typeof day.pop === 'number' ? Math.round(day.pop * 100) : null;
+
+    const el = document.createElement('div');
+    el.className = 'forecast-card p-3 text-center';
+    el.style.minWidth = '120px';
+    el.style.flex = '1 0 140px';
+    el.innerHTML = `
+      <div class="fw-bold mb-2">${dayName}</div>
+      <div class="mb-2">${ icon ? `<img src="https://openweathermap.org/img/wn/${icon}@2x.png" width="56" height="56" alt="${desc}">` : '' }</div>
+      <div class="small text-muted mb-2">${desc}</div>
+      <div class="h5 mb-0">${max}°</div>
+      <div class="text-muted">${min}° ${pop!=null?('| ' + pop + '%') : ''}</div>
+    `;
+    container.appendChild(el);
+  });
+
+  // update button active state
+  try {
+    const hourlyBtnEl = document.getElementById('hourlyButton');
+    const dailyBtnEl = document.getElementById('dailyButton');
+    const weeklyBtnEl = document.getElementById('weeklyButton');
+    if (weeklyBtnEl) { weeklyBtnEl.classList.add('active'); weeklyBtnEl.setAttribute('aria-pressed', 'true'); }
+    if (hourlyBtnEl) { hourlyBtnEl.classList.remove('active'); hourlyBtnEl.setAttribute('aria-pressed', 'false'); }
+    if (dailyBtnEl) { dailyBtnEl.classList.remove('active'); dailyBtnEl.setAttribute('aria-pressed', 'false'); }
+  } catch (e) { /* ignore */ }
+}
+
 function render5DayForecast(forecastData) {
   if (!forecastData || !forecastData.list) return;
+  // show 5-day container and hide hourly when rendering daily view
+  const hourlyContainer = document.getElementById('forecast-hourly');
+  const dailyContainer = document.getElementById('forecast-5day');
+  if (hourlyContainer) hourlyContainer.style.display = 'none';
+  if (dailyContainer) dailyContainer.style.display = 'flex';
+  // update button active state
+  try {
+    const hourlyBtnEl = document.getElementById('hourlyButton');
+    const dailyBtnEl = document.getElementById('dailyButton');
+    if (dailyBtnEl) { dailyBtnEl.classList.add('active'); dailyBtnEl.setAttribute('aria-pressed', 'true'); }
+    if (hourlyBtnEl) { hourlyBtnEl.classList.remove('active'); hourlyBtnEl.setAttribute('aria-pressed', 'false'); }
+  } catch (e) { /* ignore */ }
   // Group forecast entries by date string YYYY-MM-DD
   const groups = {};
   forecastData.list.forEach(item => {
@@ -240,9 +374,9 @@ function initMap() {
     // Template: http://maps.openweathermap.org/maps/2.0/weather/{op}/{z}/{x}/{y}?appid={API key}
     try {
       if (hasValidApiKey()) {
-        const owmOp = 'temp_new'; // change to clouds_new, precipitation_new, etc. as desired
-        const owmTpl = `http://maps.openweathermap.org/maps/2.0/weather/${owmOp}/{z}/{x}/{y}?appid=${encodeURIComponent(API_KEY)}`;
-        mapOwmTiles = L.tileLayer(owmTpl, { opacity: 0.55, attribution: '&copy; OpenWeatherMap' }).addTo(map);
+        // Use the requested OpenWeatherMap tiles template (TA2) with fixed params
+        const owmTpl = `http://maps.openweathermap.org/maps/2.0/weather/TA2/{z}/{x}/{y}?date=1552861800&opacity=0.9&fill_bound=true&appid=${encodeURIComponent(API_KEY)}`;
+        mapOwmTiles = L.tileLayer(owmTpl, { opacity: 0.9, attribution: '&copy; OpenWeatherMap' }).addTo(map);
       } else {
         console.warn('Skipping OpenWeatherMap tiles — API key missing or appears to be a placeholder.');
       }
@@ -462,6 +596,75 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (autoCheckbox) {
     autoCheckbox.addEventListener('change', (e) => startAutoRefresh(e.target.checked));
+  }
+  // Hourly / Daily view buttons
+  const hourlyBtn = document.getElementById('hourlyButton');
+  const dailyBtn = document.getElementById('dailyButton');
+  if (hourlyBtn) {
+    hourlyBtn.addEventListener('click', async () => {
+      if (!currentCity) { showAlert('Please search for a city first', 'warning'); return; }
+      try {
+        // Use cached forecast if it matches currentCity, otherwise fetch
+        let data = null;
+        if (lastForecastData && lastForecastData.city && lastForecastData.city.name && lastForecastData.city.name.toLowerCase() === String(currentCity).toLowerCase()) {
+          data = lastForecastData;
+        } else {
+          data = await getForecastByCity(currentCity);
+        }
+        if (data) renderHourlyForecast(data);
+      } catch (e) {
+        console.warn('Hourly view failed', e);
+        showAlert('Failed to load hourly forecast', 'danger');
+      }
+    });
+  }
+  // Weekly button handler
+  const weeklyBtn = document.getElementById('weeklyButton');
+  if (weeklyBtn) {
+    weeklyBtn.addEventListener('click', async () => {
+      try {
+        // prefer coordinates if available
+        let lat = null, lon = null;
+        if (currentCoords && currentCoords.lat != null && currentCoords.lon != null) {
+          lat = currentCoords.lat; lon = currentCoords.lon;
+        } else if (lastForecastData && lastForecastData.city && lastForecastData.city.coord) {
+          lat = lastForecastData.city.coord.lat; lon = lastForecastData.city.coord.lon;
+        }
+        if (lat == null || lon == null) {
+          if (currentCity) {
+            // try to fetch current weather to populate coords
+            await getWeatherByCity(currentCity);
+            if (currentCoords && currentCoords.lat != null) { lat = currentCoords.lat; lon = currentCoords.lon; }
+          }
+        }
+        if (lat == null || lon == null) {
+          showAlert('Please search for a city or use your location first', 'warning');
+          return;
+        }
+        const data = await getWeeklyByCoords(lat, lon);
+        if (data) renderWeeklyForecast(data);
+      } catch (e) {
+        console.warn('Weekly view failed', e);
+        showAlert('Failed to load weekly forecast', 'danger');
+      }
+    });
+  }
+  if (dailyBtn) {
+    dailyBtn.addEventListener('click', async () => {
+      if (!currentCity) { showAlert('Please search for a city first', 'warning'); return; }
+      try {
+        let data = null;
+        if (lastForecastData && lastForecastData.city && lastForecastData.city.name && lastForecastData.city.name.toLowerCase() === String(currentCity).toLowerCase()) {
+          data = lastForecastData;
+        } else {
+          data = await getForecastByCity(currentCity);
+        }
+        if (data) render5DayForecast(data);
+      } catch (e) {
+        console.warn('Daily view failed', e);
+        showAlert('Failed to load daily forecast', 'danger');
+      }
+    });
   }
   // Map image toggle removed — no-op
   // Heatmap toggle handling

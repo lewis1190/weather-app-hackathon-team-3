@@ -1,5 +1,4 @@
 import { updateForecastUI } from './five-day-forecast.js';
-import { mockForecastData } from './mock-forecast-data.js';
 
 // MyForecast JavaScript
 // Replace with your OpenWeatherMap API key

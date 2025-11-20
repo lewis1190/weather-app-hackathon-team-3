@@ -1,90 +1,96 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>MyForecast</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="styles.css" rel="stylesheet">
-  </head>
-  <body>
-    <header>
-      <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
-        <div class="container">
-          <a class="navbar-brand" href="#">MyForecast</a>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu" aria-controls="navMenu" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-          </button>
-          <div class="collapse navbar-collapse" id="navMenu">
-            <ul class="navbar-nav ms-auto">
-              <li class="nav-item"><a class="nav-link" href="#">Home</a></li>
-              <li class="nav-item"><a class="nav-link" href="./pages/saved-locations.html">Saved Locations</a></li>
-            </ul>
-          </div>
-        </div>
-      </nav>
-    </header>
 
-    <main class="container mb-5">
-      <div class="row mb-3">
-        <div class="col-12 col-lg-7">
-          <div class="input-group">
-            <input id="city-input" type="text" class="form-control" placeholder="Enter city (e.g. London)" />
-            <button id="search-btn" class="btn btn-primary">Search</button>
-            <button id="loc-btn" class="btn btn-outline-secondary" title="Use my location">Use my location</button>
-          </div>
-        </div>
-        <div class="col-12 col-lg-5 mt-2 mt-lg-0 d-flex align-items-center gap-2">
-          <button id="refresh-btn" class="btn btn-success" disabled>Update now</button>
-          <div class="form-check form-switch ms-auto">
-            <input class="form-check-input" type="checkbox" id="auto-refresh">
-            <label class="form-check-label" for="auto-refresh">Auto-refresh</label>
-          </div>
-          <select id="refresh-interval" class="form-select w-auto">
-            <option value="1">1m</option>
-            <option value="5" selected>5m</option>
-            <option value="15">15m</option>
-          </select>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MyForecast</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="styles.css" rel="stylesheet">
+</head>
+
+<body>
+  <header>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
+      <div class="container">
+        <a class="navbar-brand" href="#">MyForecast</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu" aria-controls="navMenu" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navMenu">
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item"><a class="nav-link" href="#">Home</a></li>
+            <li class="nav-item"><a class="nav-link" href="./pages/saved-locations.html">Saved Locations</a></li>
+          </ul>
         </div>
       </div>
+    </nav>
+  </header>
 
-      <div id="alert-container"></div>
-
-      <div id="weather-card" class="card shadow-sm d-none">
-        <div class="card-body d-flex gap-4 align-items-center">
-          <img id="weather-icon" src="" alt="icon" width="96" height="96">
-          <div>
-            <h3 id="weather-city" class="card-title mb-0"></h3>
-            <div id="weather-desc" class="text-muted"></div>
-            <h1 id="weather-temp" class="display-4 mb-0"></h1>
-            <div id="last-updated" class="small text-muted"></div>
-          </div>
-          <div class="ms-auto text-end">
-            <div>Humidity: <span id="weather-humidity"></span>%</div>
-            <div>Wind: <span id="weather-wind"></span> m/s</div>
-            <button id="save-location-btn" class="btn btn-outline-primary mt-4">Favorite</button>
-          </div>
+  <main class="container mb-5">
+    <div class="row mb-3">
+      <div class="col-12 col-lg-7">
+        <div class="input-group">
+          <input id="city-input" type="text" class="form-control" placeholder="Enter city (e.g. London)" />
+          <button id="search-btn" class="btn btn-primary">Search</button>
+          <button id="loc-btn" class="btn btn-outline-secondary" title="Use my location">Use my location</button>
         </div>
       </div>
-
-      <div id="forecast-container" class="mt-5 d-none">
-        <h3 class="mb-4">5-Day Forecast</h3>
-        <div id="forecast-cards" class="row g-3 row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 d-flex justify-content-center align-items-center"></div>
+      <div class="col-12 col-lg-5 mt-2 mt-lg-0 d-flex align-items-center gap-2">
+        <button id="refresh-btn" class="btn btn-success" disabled>Update now</button>
+        <div class="form-check form-switch ms-auto">
+          <input class="form-check-input" type="checkbox" id="auto-refresh">
+          <label class="form-check-label" for="auto-refresh">Auto-refresh</label>
+        </div>
+        <select id="refresh-interval" class="form-select w-auto">
+          <option value="1">1m</option>
+          <option value="5" selected>5m</option>
+          <option value="15">15m</option>
+        </select>
       </div>
-    </main>
+    </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script type="module" src="./js/app.js"></script>
+    <!-- ADDED for invalid search error messages -->
+    <div id="alert-container" aria-live="assertive" aria-atomic="true"></div>
 
-    <footer class="bg-light py-3 mt-4">
-      <div class="container d-flex flex-column flex-md-row align-items-center gap-2">
-        <div class="text-muted">&copy; <span id="year"></span> MyForecast</div>
-        <div class="ms-md-auto small">
-          <a href="https://openweathermap.org/" target="_blank" rel="noopener">Data: OpenWeatherMap</a>
+    <div id="weather-card" class="card shadow-sm d-none">
+      <div class="card-body d-flex gap-4 align-items-center">
+        <img id="weather-icon" src="" alt="icon" width="96" height="96">
+        <div>
+          <h3 id="weather-city" class="card-title mb-0"></h3>
+          <div id="weather-desc" class="text-muted"></div>
+          <h1 id="weather-temp" class="display-4 mb-0"></h1>
+          <div id="last-updated" class="small text-muted"></div>
+        </div>
+        <div class="ms-auto text-end">
+          <div>Feels like: <span id="weather-feels-like"></span>°C</div>
+          <div>Humidity: <span id="weather-humidity"></span>%</div>
+          <div>Wind: <span id="weather-wind"></span> m/s</div>
+          <div>Air Quality Index: <span id="weather-air-quality-index"></span></div>
+          <button id="save-location-btn" class="btn btn-outline-primary mt-4">Favorite</button>
         </div>
       </div>
-    </footer>
+    </div>
 
-    <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
-  </body>
+    <div id="forecast-container" class="mt-5 d-none">
+      <h3 class="mb-4">5-Day Forecast</h3>
+      <div id="forecast-cards" class="row g-3 row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 d-flex justify-content-center align-items-center"></div>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script type="module" src="./js/app.js"></script>
+
+  <footer class="bg-light py-3 mt-4">
+    <div class="container d-flex flex-column flex-md-row align-items-center gap-2">
+      <div class="text-muted">&copy; <span id="year"></span> MyForecast</div>
+      <div class="ms-md-auto small">
+        <a href="https://openweathermap.org/" target="_blank" rel="noopener">Data: OpenWeatherMap</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+</body>
+
 </html>

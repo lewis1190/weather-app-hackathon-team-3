@@ -1,6 +1,6 @@
 import { updateForecastUI } from './five-day-forecast.js';
 import { mockWeatherData, mockForecastData } from './mock-data.js';
-import { saveLocation } from './save-location.js';
+import { saveLocation, removeLocation, isLocationSaved } from './save-location.js';
 
 // MyForecast JavaScript
 // Replace with your OpenWeatherMap API key
@@ -65,6 +65,8 @@ document.addEventListener('DOMContentLoaded', () => {
     card.classList.remove('d-none');
     const refreshBtn = document.getElementById('refresh-btn');
     refreshBtn.disabled = false;
+
+    updateSaveButtonState();
   }
 
   async function getFiveDayForecastByCoords(lat, lon) {
@@ -140,6 +142,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  // Save locations UI logic
+  function updateSaveButtonState() {
+    if (!currentCity || !currentCountry) return;
+
+    const isSaved = isLocationSaved(currentCity, currentCountry);
+    saveLocationBtn.textContent = isSaved ? 'Remove Favorite' : 'Save as Favorite';
+    saveLocationBtn.classList.toggle('btn-outline-primary', !isSaved);
+    saveLocationBtn.classList.toggle('btn-danger', isSaved);
+  }
+
   // ############# Event listeners #############
   function searchBtnHandler() {
     refreshBtn.disabled = true;
@@ -186,7 +198,24 @@ document.addEventListener('DOMContentLoaded', () => {
       showAlert('Please search for a location first', 'warning');
       return;
     }
-    saveLocation(currentCoords.lat, currentCoords.lon, currentCity, currentCountry);
+
+    const isSaved = isLocationSaved(currentCity, currentCountry);
+
+    if (isSaved) {
+      if (removeLocation(currentCity, currentCountry)) {
+        showAlert('Location removed from favorites', 'info', 2000);
+        updateSaveButtonState();
+      } else {
+        showAlert('Error removing location', 'danger');
+      }
+    } else {
+      if (saveLocation(currentCoords.lat, currentCoords.lon, currentCity, currentCountry)) {
+        showAlert('Location saved to favorites', 'success', 2000);
+        updateSaveButtonState();
+      } else {
+        showAlert('Location already saved or error occurred', 'warning');
+      }
+    }
   }
 
   searchBtn.addEventListener('click', searchBtnHandler);

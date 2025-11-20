@@ -70,6 +70,8 @@ let map = null;
 let mapMarker = null;
 let mapCanvas = null;
 let mapCanvasCtx = null;
+let mapHeatLayer = null;
+let mapOwmTiles = null;
 
 function showAlert(message, type = 'danger', timeout = 5000) {
   // If the dedicated alert container exists on this page, render there.
@@ -218,6 +220,35 @@ function initMap() {
       maxZoom: 19,
       attribution: '&copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors'
     }).addTo(map);
+
+    // Create a demo Leaflet heat layer if the plugin is present (do NOT add by default)
+    try {
+      if (typeof L !== 'undefined' && typeof L.heatLayer === 'function') {
+        const heatData = [
+          [37.782, -122.447, 0.8],
+          [37.782, -122.445, 0.7],
+          [37.782, -122.443, 0.9]
+        ];
+        // create the layer but do not add it immediately — toggle will control visibility
+        mapHeatLayer = L.heatLayer(heatData, { radius: 25, blur: 15, maxZoom: 17 });
+      }
+    } catch (e) {
+      console.warn('Leaflet heat layer not available', e);
+    }
+
+    // Add OpenWeatherMap tiles overlay (requires a valid OpenWeatherMap API key).
+    // Template: http://maps.openweathermap.org/maps/2.0/weather/{op}/{z}/{x}/{y}?appid={API key}
+    try {
+      if (hasValidApiKey()) {
+        const owmOp = 'temp_new'; // change to clouds_new, precipitation_new, etc. as desired
+        const owmTpl = `http://maps.openweathermap.org/maps/2.0/weather/${owmOp}/{z}/{x}/{y}?appid=${encodeURIComponent(API_KEY)}`;
+        mapOwmTiles = L.tileLayer(owmTpl, { opacity: 0.55, attribution: '&copy; OpenWeatherMap' }).addTo(map);
+      } else {
+        console.warn('Skipping OpenWeatherMap tiles — API key missing or appears to be a placeholder.');
+      }
+    } catch (e) {
+      console.warn('Could not add OpenWeatherMap tile layer', e);
+    }
 
     // create a canvas overlay in the overlayPane
     try {
@@ -482,14 +513,37 @@ document.addEventListener('DOMContentLoaded', () => {
       heatContainer.classList.remove('d-none');
       resizeCanvas();
       drawHeatmapDemo();
+      // also enable the Leaflet heat layer if present
+      try {
+        if (map && mapHeatLayer && !map.hasLayer(mapHeatLayer)) map.addLayer(mapHeatLayer);
+      } catch (e) { console.warn('Could not add Leaflet heat layer', e); }
+      try { localStorage.setItem('heatmapEnabled', '1'); } catch (e) { /* ignore */ }
     } else {
       heatContainer.classList.add('d-none');
+      try {
+        if (map && mapHeatLayer && map.hasLayer(mapHeatLayer)) map.removeLayer(mapHeatLayer);
+      } catch (e) { console.warn('Could not remove Leaflet heat layer', e); }
+      try { localStorage.setItem('heatmapEnabled', '0'); } catch (e) { /* ignore */ }
     }
   }
 
   if (heatToggle) {
     heatToggle.addEventListener('change', (e) => showHeatmap(e.target.checked));
-    window.addEventListener('resize', () => { if (!heatContainer.classList.contains('d-none')) { resizeCanvas(); drawHeatmapDemo(); } });
+    // restore previous state from localStorage
+    try {
+      const saved = localStorage.getItem('heatmapEnabled');
+      if (saved === '1') {
+        heatToggle.checked = true;
+        showHeatmap(true);
+      }
+    } catch (e) { /* ignore */ }
+
+    window.addEventListener('resize', () => {
+      try {
+        if (!heatContainer.classList.contains('d-none')) { resizeCanvas(); drawHeatmapDemo(); }
+        if (map && mapHeatLayer && map.hasLayer(mapHeatLayer) && typeof map.invalidateSize === 'function') map.invalidateSize();
+      } catch (e) { /* ignore */ }
+    });
   }
 
   // If this page is the alerts page or the standalone weather card page, handle any pending city search or pending alert

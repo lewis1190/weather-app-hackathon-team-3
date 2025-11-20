@@ -31,6 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
     getWeatherByCoords(parseFloat(queryLat), parseFloat(queryLon));
   }
 
+  // ############# Alert Function #############
   function showAlert(message, type = 'danger', timeout) {
     const container = document.getElementById('alert-container');
     container.innerHTML = `
@@ -41,7 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (timeout) setTimeout(() => (container.innerHTML = ''), timeout);
   }
 
-  // API Weather Fetching Functions
+  // ############# API Weather Fetching Functions #############
   async function fetchWeatherJson(url) {
     const res = await fetch(url);
     if (!res.ok) {
@@ -50,58 +51,6 @@ document.addEventListener('DOMContentLoaded', () => {
       throw new Error(msg);
     }
     return res.json();
-  }
-
-  // UI Update Functions
-  function updateUI(weatherData, aqiData) {
-    // Update weather card UI with fetched data
-    const card = document.getElementById('weather-card');
-    document.getElementById('weather-city').textContent = `${weatherData.name}, ${
-      weatherData.sys?.country || ''
-    }`;
-    document.getElementById('weather-desc').textContent = weatherData.weather?.[0]?.description || '';
-    document.getElementById('weather-temp').textContent = `${Math.round(weatherData.main.temp)}°C`;
-    document.getElementById('weather-humidity').textContent = weatherData.main.humidity;
-    document.getElementById('weather-wind').textContent = weatherData.wind?.speed ?? '';
-    document.getElementById('weather-feels-like').textContent = Math.round(weatherData.main.feels_like);
-
-    const aqiElement = document.getElementById('weather-air-quality-index');
-    const aqiValue = aqiData.list[0].main.aqi || '';
-
-    const aqiComment = ['Very Good', 'Good', 'Moderate', 'Bad', 'Very Bad'];
-    document.getElementById('weather-air-quality-index').textContent = `${aqiData.list[0].main.aqi} (${
-      aqiComment[aqiData.list[0].main.aqi - 1]
-    })`;
-
-    // Reset existing AQI classes
-    aqiElement.className = '';
-    // Add the appropriate AQI color class
-    if (aqiValue >= 1 && aqiValue <= 5) {
-      aqiElement.classList.add(`aqi-${aqiValue}`);
-    }
-
-    // Update sunrise and sunset times
-    document.getElementById('weather-sunrise').textContent = convertSunTimeToDisplayTime(
-      weatherData.sys?.sunrise
-    );
-    document.getElementById('weather-sunset').textContent = convertSunTimeToDisplayTime(
-      weatherData.sys?.sunset
-    );
-
-    const icon = weatherData.weather?.[0]?.icon;
-
-    if (icon) {
-      document.getElementById('weather-icon').src = `https://openweathermap.org/img/wn/${icon}@2x.png`;
-      document.getElementById('weather-icon').alt = weatherData.weather[0].description;
-    }
-
-    document.getElementById('last-updated').textContent = `Last updated: ${new Date().toLocaleString()}`;
-    card.classList.remove('d-none');
-    refreshBtn.disabled = false;
-    autoCheckbox.disabled = false;
-    intervalSelect.disabled = false;
-
-    updateSaveButtonState();
   }
 
   async function getFiveDayForecastByCoords(lat, lon) {
@@ -179,6 +128,58 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch (err) {
       showAlert(err.message || 'Unable to get weather by coords');
     }
+  }
+
+  // ############# UI Update Functions #############
+  function updateUI(weatherData, aqiData) {
+    // Update weather card UI with fetched data
+    const card = document.getElementById('weather-card');
+    document.getElementById('weather-city').textContent = `${weatherData.name}, ${
+      weatherData.sys?.country || ''
+    }`;
+    document.getElementById('weather-desc').textContent = weatherData.weather?.[0]?.description || '';
+    document.getElementById('weather-temp').textContent = `${Math.round(weatherData.main.temp)}°C`;
+    document.getElementById('weather-humidity').textContent = weatherData.main.humidity;
+    document.getElementById('weather-wind').textContent = weatherData.wind?.speed ?? '';
+    document.getElementById('weather-feels-like').textContent = Math.round(weatherData.main.feels_like);
+
+    const aqiElement = document.getElementById('weather-air-quality-index');
+    const aqiValue = aqiData.list[0].main.aqi || '';
+
+    const aqiComment = ['Very Good', 'Good', 'Moderate', 'Bad', 'Very Bad'];
+    document.getElementById('weather-air-quality-index').textContent = `${aqiData.list[0].main.aqi} (${
+      aqiComment[aqiData.list[0].main.aqi - 1]
+    })`;
+
+    // Reset existing AQI classes
+    aqiElement.className = '';
+    // Add the appropriate AQI color class
+    if (aqiValue >= 1 && aqiValue <= 5) {
+      aqiElement.classList.add(`aqi-${aqiValue}`);
+    }
+
+    // Update sunrise and sunset times
+    document.getElementById('weather-sunrise').textContent = convertSunTimeToDisplayTime(
+      weatherData.sys?.sunrise
+    );
+    document.getElementById('weather-sunset').textContent = convertSunTimeToDisplayTime(
+      weatherData.sys?.sunset
+    );
+
+    const icon = weatherData.weather?.[0]?.icon;
+
+    if (icon) {
+      document.getElementById('weather-icon').src = `https://openweathermap.org/img/wn/${icon}@2x.png`;
+      document.getElementById('weather-icon').alt = weatherData.weather[0].description;
+    }
+
+    document.getElementById('last-updated').textContent = `Last updated: ${new Date().toLocaleString()}`;
+    card.classList.remove('d-none');
+    refreshBtn.disabled = false;
+    autoCheckbox.disabled = false;
+    intervalSelect.disabled = false;
+
+    updateSaveButtonState();
   }
 
   // Save locations UI logic

@@ -72,7 +72,21 @@ document.addEventListener('DOMContentLoaded', () => {
       currentCoords = { lat: data.coord.lat, lon: data.coord.lon };
       updateUI(data);
     } catch (err) {
-      showAlert(err.message || 'Unable to get weather');
+      // ADDED FOR INVALID-SEARCH:
+      console.error('getWeatherByCity error:', err);
+
+      const msg = (err && err.message) ? String(err.message).toLowerCase() : '';
+
+      if (msg.includes('city not found') || msg.includes('404') || msg.includes('not found')) {
+        // User-friendly message for unknown city (acceptance criteria)
+        showAlert('City not found. Please check the spelling.', 'warning');
+      } else if (msg.includes('network') || msg.includes('failed fetching')) {
+        // Network-related friendly message
+        showAlert('Network error. Please check your connection and try again.', 'warning');
+      } else {
+        // Generic fallback message
+        showAlert('Unable to get weather. Please try again later.', 'warning');
+      }
     }
   }
 

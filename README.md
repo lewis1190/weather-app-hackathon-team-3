@@ -1,3 +1,13 @@
+# Weather-App
+
+## Contents
+
+-   [Live Site](#live-site)
+-   [Introduction](#introduction)
+-   [Responsivity](#responsivity)
+-   [User Experience](#user-experience)
+-   [Design](#design)
+
 # Introduction
 
 Weather App (Hackathon Team 3) is a small responsive web app that shows current weather and a 5-day forecast, displays alerts, and includes an interactive map. Users can search for a city or use geolocation to get weather details (temperature in °C, humidity, wind, and description). The app integrates OpenWeatherMap for weather data and links to Met Office weather warnings for additional advisories.
@@ -41,6 +51,20 @@ Balsamiq Wireframes were used to plan the layout of the site.
 As can be observed above, we had a framework for how we wanted to present the site & its key features.
 
 Although simplistic, the added time allowed us to focus on UX by means of features & interactivity.
+
+### Surface
+
+## Design
+
+From a design perspective, our main goal was to relay information the end-user visually.
+
+To achieve this we included the following features:
+
+-   Interactive map
+-   Cards displaying weather information
+-   Dynamic background
+
+
 
 
 

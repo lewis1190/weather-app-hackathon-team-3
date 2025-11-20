@@ -1,7 +1,7 @@
 import { getSavedLocations } from '../js/save-location.js';
 import { removeLocation } from '../js/save-location.js';
 
-// MyForecast JavaScript
+// TrueWeather JavaScript
 // Replace with your OpenWeatherMap API key
 
 // Lewis API Key - Replace with your own - 0bcd555b9f589fa92e927350a8fed8e4

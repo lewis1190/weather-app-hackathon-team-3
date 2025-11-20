@@ -4,8 +4,20 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>MyForecast</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Browser Title -->
+  <title>TrueWeather | Home</title>
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Display:ital,wght@0,100..900;1,100..900&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Raleway:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome -->
+  <script src="https://kit.fontawesome.com/d2b8795f3e.js" crossorigin="anonymous"></script>
+
+  <!-- Custom CSS -->
   <link href="styles.css" rel="stylesheet">
 </head>
 
@@ -13,13 +25,13 @@
   <header>
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
       <div class="container">
-        <a class="navbar-brand" href="#">MyForecast</a>
+        <a class="navbar-brand" href="#"><i class="fa-solid fa-cloud"></i> &nbsp;TrueWeather</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu" aria-controls="navMenu" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navMenu">
           <ul class="navbar-nav ms-auto">
-            <li class="nav-item"><a class="nav-link" href="#">Home</a></li>
+            <li class="nav-item"><a class="nav-link active" href="#">Home</a></li>
             <li class="nav-item"><a class="nav-link" href="./pages/saved-locations.html">Saved Locations</a></li>
           </ul>
         </div>
@@ -36,13 +48,13 @@
           <button id="loc-btn" class="btn btn-outline-secondary" title="Use my location">Use my location</button>
         </div>
       </div>
-      <div class="col-12 col-lg-5 mt-2 mt-lg-0 d-flex align-items-center gap-2">
+      <div class="col-12 col-lg-5 mt-3 mt-lg-0 d-flex align-items-center gap-2">
         <button id="refresh-btn" class="btn btn-success" disabled>Update now</button>
         <div class="form-check form-switch ms-auto">
-          <input class="form-check-input" type="checkbox" id="auto-refresh">
+          <input class="form-check-input" type="checkbox" id="auto-refresh" disabled>
           <label class="form-check-label" for="auto-refresh">Auto-refresh</label>
         </div>
-        <select id="refresh-interval" class="form-select w-auto">
+        <select id="refresh-interval" class="form-select w-auto" disabled>
           <option value="1">1m</option>
           <option value="5" selected>5m</option>
           <option value="15">15m</option>
@@ -83,7 +95,23 @@
 
   <footer class="bg-light py-3 mt-4">
     <div class="container d-flex flex-column flex-md-row align-items-center gap-2">
-      <div class="text-muted">&copy; <span id="year"></span> MyForecast</div>
+      <div class="text-muted">&copy; <span id="year"></span> TrueWeather. All rights reserved.</div>
+      <div class="d-flex ms-md-3 small footer-links align-items-baseline gap-1">
+        <a href="https://www.metoffice.gov.uk/weather/warnings-and-advice" target="_blank" rel="noopener">
+          <i class="fa-solid fa-cloud footer-icon" aria-hidden="true"></i>&nbsp;
+          <span>Weather warnings</span>
+        </a>
+        <span class="sep mx-3">|</span>
+        <a href="https://github.com/lewis1190/weather-app-hackathon-team-3" target="_blank" rel="noopener">
+          <i class="fa-brands fa-github footer-icon" aria-hidden="true"></i>&nbsp;
+          <span>GitHub</span>
+        </a>
+        <span class="sep mx-3">|</span>
+        <a href="https://www.linkedin.com/" target="_blank" rel="noopener">
+          <i class="fa-brands fa-linkedin footer-icon" aria-hidden="true"></i>&nbsp;
+          <span>LinkedIn</span>
+        </a>
+      </div>
       <div class="ms-md-auto small">
         <a href="https://openweathermap.org/" target="_blank" rel="noopener">Data: OpenWeatherMap</a>
       </div>

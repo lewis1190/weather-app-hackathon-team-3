@@ -1,7 +1,7 @@
 import { updateForecastUI } from './five-day-forecast.js';
 import { saveLocation, removeLocation, isLocationSaved } from './save-location.js';
 
-// MyForecast JavaScript
+// TrueWeather JavaScript
 // Replace with your OpenWeatherMap API key
 
 // Lewis API Key - Replace with your own - 0bcd555b9f589fa92e927350a8fed8e4
@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const autoCheckbox = document.getElementById('auto-refresh');
   const cityInput = document.getElementById('city-input');
   const saveLocationBtn = document.getElementById('save-location-btn');
+  const intervalSelect = document.getElementById('refresh-interval');
 
   const API_KEY = '0bcd555b9f589fa92e927350a8fed8e4';
 
@@ -49,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
     return res.json();
   }
 
-  function updateUI(weatherData, AQIData) {
+  function updateUI(weatherData, aqiData) {
     // Update weather card UI with fetched data
     const card = document.getElementById('weather-card');
     document.getElementById('weather-city').textContent = `${weatherData.name}, ${
@@ -61,35 +62,19 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('weather-wind').textContent = weatherData.wind?.speed ?? '';
     document.getElementById('weather-feels-like').textContent = Math.round(weatherData.main.feels_like);
 
-    switch (AQIData.list[0].main.aqi) {
-      case 1:
-        document.getElementById('weather-air-quality-index').textContent = '1 (Very Good)';
-        break;
-      case 2:
-        document.getElementById('weather-air-quality-index').textContent = '2 (Good)';
-        break;
-      case 3:
-        document.getElementById('weather-air-quality-index').textContent = '3 (Moderate)';
-        break;
-      case 4:
-        document.getElementById('weather-air-quality-index').textContent = '4 (Bad)';
-        break;
-      case 5:
-        document.getElementById('weather-air-quality-index').textContent = '5 (Very Bad)';
-        break;
-      default:
-        break;
-    }
+    const aqiElement = document.getElementById('weather-air-quality-index');
+    const aqiValue = aqiData.list[0].main.aqi || '';
 
-    // Get colour from AQI value
-    const AQIValue = AQIData.list[0].main.aqi || '';
-    const AQIElement = document.getElementById('weather-air-quality-index');
+    const aqiComment = ['Very Good', 'Good', 'Moderate', 'Bad', 'Very Bad'];
+    document.getElementById('weather-air-quality-index').textContent = `${aqiData.list[0].main.aqi} (${
+      aqiComment[aqiData.list[0].main.aqi - 1]
+    })`;
 
-    // Remove any existing AQI classes
-    AQIElement.className = '';
+    // Reset existing AQI classes
+    aqiElement.className = '';
     // Add the appropriate AQI color class
-    if (AQIValue >= 1 && AQIValue <= 5) {
-      AQIElement.classList.add(`aqi-${AQIValue}`);
+    if (aqiValue >= 1 && aqiValue <= 5) {
+      aqiElement.classList.add(`aqi-${aqiValue}`);
     }
 
     const icon = weatherData.weather?.[0]?.icon;
@@ -101,8 +86,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById('last-updated').textContent = `Last updated: ${new Date().toLocaleString()}`;
     card.classList.remove('d-none');
-    const refreshBtn = document.getElementById('refresh-btn');
     refreshBtn.disabled = false;
+    autoCheckbox.disabled = false;
+    intervalSelect.disabled = false;
 
     updateSaveButtonState();
   }
@@ -184,26 +170,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // TODO: Move this down in the code with the rest of the event listeners.
-  function startAutoRefresh(enabled) {
-    const intervalSelect = document.getElementById('refresh-interval');
-    const minutes = parseInt(intervalSelect.value, 10) || 5;
-    if (autoRefreshTimer) {
-      clearInterval(autoRefreshTimer);
-      autoRefreshTimer = null;
-    }
-    if (enabled) {
-      autoRefreshTimer = setInterval(() => {
-        if (currentCity) {
-          getWeatherByCity(currentCity);
-        } else if (currentCoords) getWeatherByCoords(currentCoords.lat, currentCoords.lon);
-      }, minutes * 60 * 1000);
-      showAlert(`Auto-refresh enabled (${minutes} minute${minutes > 1 ? 's' : ''})`, 'info', 3000);
-    } else {
-      showAlert('Auto-refresh disabled', 'info', 2000);
-    }
-  }
-
   // Save locations UI logic
   function updateSaveButtonState() {
     if (!currentCity || !currentCountry) return;
@@ -216,7 +182,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ############# Event listeners #############
   function searchBtnHandler() {
-    refreshBtn.disabled = true;
     const city = cityInput.value.trim();
     if (!city) {
       showAlert('Please enter a city name', 'warning');
@@ -226,7 +191,6 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function locationBtnHandler() {
-    refreshBtn.disabled = true;
     if (!navigator.geolocation) {
       showAlert('Geolocation not supported by this browser');
       return;
@@ -280,11 +244,29 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  function autoRefreshSwitchHandler(event) {
+    const minutes = parseInt(intervalSelect.value, 10) || 5;
+    if (autoRefreshTimer) {
+      clearInterval(autoRefreshTimer);
+      autoRefreshTimer = null;
+    }
+    if (event.target.checked) {
+      autoRefreshTimer = setInterval(() => {
+        if (currentCity) {
+          getWeatherByCity(currentCity);
+        } else if (currentCoords) getWeatherByCoords(currentCoords.lat, currentCoords.lon);
+      }, minutes * 60 * 1000);
+      showAlert(`Auto-refresh enabled (${minutes} minute${minutes > 1 ? 's' : ''})`, 'info', 3000);
+    } else {
+      showAlert('Auto-refresh disabled', 'info', 2000);
+    }
+  }
+
   searchBtn.addEventListener('click', searchBtnHandler);
   locBtn.addEventListener('click', locationBtnHandler);
   cityInput.addEventListener('keydown', cityInputKeydownHandler);
   refreshBtn.addEventListener('click', refreshBtnHandler);
   saveLocationBtn.addEventListener('click', saveLocationBtnHandler);
-  autoCheckbox.addEventListener('change', (e) => startAutoRefresh(e.target.checked));
+  autoCheckbox.addEventListener('change', autoRefreshSwitchHandler);
   // ############# Event listeners #############
 });

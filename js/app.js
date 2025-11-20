@@ -80,7 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (msg.includes('city not found') || msg.includes('404') || msg.includes('not found')) {
         // User-friendly message for unknown city (acceptance criteria)
         showAlert('City not found. Please check the spelling.', 'warning');
-      } else if (msg.includes('network') || msg.includes('failed fetching')) {
+      } else if (msg.includes('network') || msg.includes('failed fetching') || msg.includes('failed to fetch')) {
         // Network-related friendly message
         showAlert('Network error. Please check your connection and try again.', 'warning');
       } else {

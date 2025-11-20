@@ -1,4 +1,5 @@
 import { updateForecastUI } from './five-day-forecast.js';
+import { saveLocation, removeLocation, isLocationSaved } from './save-location.js';
 
 // MyForecast JavaScript
 // Replace with your OpenWeatherMap API key
@@ -11,12 +12,22 @@ document.addEventListener('DOMContentLoaded', () => {
   const refreshBtn = document.getElementById('refresh-btn');
   const autoCheckbox = document.getElementById('auto-refresh');
   const cityInput = document.getElementById('city-input');
+  const saveLocationBtn = document.getElementById('save-location-btn');
 
   const API_KEY = '0bcd555b9f589fa92e927350a8fed8e4';
 
   let currentCity = null;
+  let currentCountry = null;
   let currentCoords = null;
   let autoRefreshTimer = null;
+
+  // Check for lat/lon query parameters and fetch weather if provided
+  const params = new URLSearchParams(window.location.search);
+  const queryLat = params.get('lat');
+  const queryLon = params.get('lon');
+  if (queryLat && queryLon) {
+    getWeatherByCoords(parseFloat(queryLat), parseFloat(queryLon));
+  }
 
   function showAlert(message, type = 'danger', timeout) {
     const container = document.getElementById('alert-container');
@@ -41,7 +52,9 @@ document.addEventListener('DOMContentLoaded', () => {
   function updateUI(weatherData, AQIData) {
     // Update weather card UI with fetched data
     const card = document.getElementById('weather-card');
-    document.getElementById('weather-city').textContent = `${weatherData.name}, ${weatherData.sys?.country || ''}`;
+    document.getElementById('weather-city').textContent = `${weatherData.name}, ${
+      weatherData.sys?.country || ''
+    }`;
     document.getElementById('weather-desc').textContent = weatherData.weather?.[0]?.description || '';
     document.getElementById('weather-temp').textContent = `${Math.round(weatherData.main.temp)}°C`;
     document.getElementById('weather-humidity').textContent = weatherData.main.humidity;
@@ -90,6 +103,8 @@ document.addEventListener('DOMContentLoaded', () => {
     card.classList.remove('d-none');
     const refreshBtn = document.getElementById('refresh-btn');
     refreshBtn.disabled = false;
+
+    updateSaveButtonState();
   }
 
   async function getFiveDayForecastByCoords(lat, lon) {
@@ -119,6 +134,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const AQIUrl = `http://api.openweathermap.org/data/2.5/air_pollution?lat=${currentCoords.lat}&lon=${currentCoords.lon}&appid=${API_KEY}`;
       const AQIData = await fetchWeatherJson(AQIUrl);
       currentCity = weatherData.name;
+      currentCountry = weatherData.sys?.country;
       updateUI(weatherData, AQIData);
 
       // Fetch 5-day forecast
@@ -127,12 +143,16 @@ document.addEventListener('DOMContentLoaded', () => {
       // ADDED FOR INVALID-SEARCH:
       console.error('getWeatherByCity error:', err);
 
-      const msg = (err && err.message) ? String(err.message).toLowerCase() : '';
+      const msg = err && err.message ? String(err.message).toLowerCase() : '';
 
       if (msg.includes('city not found') || msg.includes('404') || msg.includes('not found')) {
         // User-friendly message for unknown city (acceptance criteria)
         showAlert('City not found. Please check the spelling.', 'warning');
-      } else if (msg.includes('network') || msg.includes('failed fetching') || msg.includes('failed to fetch')) {
+      } else if (
+        msg.includes('network') ||
+        msg.includes('failed fetching') ||
+        msg.includes('failed to fetch')
+      ) {
         // Network-related friendly message
         showAlert('Network error. Please check your connection and try again.', 'warning');
       } else {
@@ -154,6 +174,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const AQIUrl = `http://api.openweathermap.org/data/2.5/air_pollution?lat=${currentCoords.lat}&lon=${currentCoords.lon}&appid=${API_KEY}`;
       const AQIData = await fetchWeatherJson(AQIUrl);
       currentCity = weatherData.name;
+      currentCountry = weatherData.sys?.country;
       updateUI(weatherData, AQIData);
 
       // Fetch 5-day forecast
@@ -181,6 +202,16 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
       showAlert('Auto-refresh disabled', 'info', 2000);
     }
+  }
+
+  // Save locations UI logic
+  function updateSaveButtonState() {
+    if (!currentCity || !currentCountry) return;
+
+    const isSaved = isLocationSaved(currentCity, currentCountry);
+    saveLocationBtn.textContent = isSaved ? 'Remove Favorite' : 'Save as Favorite';
+    saveLocationBtn.classList.toggle('btn-outline-primary', !isSaved);
+    saveLocationBtn.classList.toggle('btn-outline-danger', isSaved);
   }
 
   // ############# Event listeners #############
@@ -224,10 +255,36 @@ document.addEventListener('DOMContentLoaded', () => {
     if (e.key === 'Enter') searchBtn.click();
   }
 
+  function saveLocationBtnHandler() {
+    if (!currentCity || !currentCoords.lat || !currentCoords.lon) {
+      showAlert('Please search for a location first', 'warning');
+      return;
+    }
+
+    const isSaved = isLocationSaved(currentCity, currentCountry);
+
+    if (isSaved) {
+      if (removeLocation(currentCity, currentCountry)) {
+        showAlert('Location removed from favorites', 'info', 2000);
+        updateSaveButtonState();
+      } else {
+        showAlert('Error removing location', 'danger');
+      }
+    } else {
+      if (saveLocation(currentCoords.lat, currentCoords.lon, currentCity, currentCountry)) {
+        showAlert('Location saved to favorites', 'success', 2000);
+        updateSaveButtonState();
+      } else {
+        showAlert('Location already saved or error occurred', 'warning');
+      }
+    }
+  }
+
   searchBtn.addEventListener('click', searchBtnHandler);
   locBtn.addEventListener('click', locationBtnHandler);
   cityInput.addEventListener('keydown', cityInputKeydownHandler);
   refreshBtn.addEventListener('click', refreshBtnHandler);
+  saveLocationBtn.addEventListener('click', saveLocationBtnHandler);
   autoCheckbox.addEventListener('change', (e) => startAutoRefresh(e.target.checked));
   // ############# Event listeners #############
 });

@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     favoriteLocationsData.forEach((data) => {
       const card = document.createElement('div');
-      card.className = 'col';
+      card.className = 'col-8 col-sm-12';
       const weatherIcon = data.weather?.[0]?.icon;
       const iconHtml = weatherIcon
         ? `<img src="https://openweathermap.org/img/wn/${weatherIcon}@2x.png" alt="icon" width="96" height="96">`

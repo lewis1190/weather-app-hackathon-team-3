@@ -41,14 +41,12 @@ document.addEventListener('DOMContentLoaded', () => {
   function updateUI(weatherData, AQIData) {
     // Update weather card UI with fetched data
     const card = document.getElementById('weather-card');
-    document.getElementById('weather-city').textContent = `${weatherData.name}, ${
-      weatherData.sys?.country || ''
-    }`;
+    document.getElementById('weather-city').textContent = `${weatherData.name}, ${weatherData.sys?.country || ''}`;
     document.getElementById('weather-desc').textContent = weatherData.weather?.[0]?.description || '';
     document.getElementById('weather-temp').textContent = `${Math.round(weatherData.main.temp)}°C`;
     document.getElementById('weather-humidity').textContent = weatherData.main.humidity;
     document.getElementById('weather-wind').textContent = weatherData.wind?.speed ?? '';
-    // document.getElementById('weather-uv-index').textContent = weatherData.current.uvi || '';
+    document.getElementById('weather-feels-like').textContent = Math.round(weatherData.main.feels_like);
 
     switch (AQIData.list[0].main.aqi) {
       case 1:
@@ -126,7 +124,21 @@ document.addEventListener('DOMContentLoaded', () => {
       // Fetch 5-day forecast
       getFiveDayForecastByCoords(currentCoords.lat, currentCoords.lon);
     } catch (err) {
-      showAlert(err.message || 'Unable to get weather');
+      // ADDED FOR INVALID-SEARCH:
+      console.error('getWeatherByCity error:', err);
+
+      const msg = (err && err.message) ? String(err.message).toLowerCase() : '';
+
+      if (msg.includes('city not found') || msg.includes('404') || msg.includes('not found')) {
+        // User-friendly message for unknown city (acceptance criteria)
+        showAlert('City not found. Please check the spelling.', 'warning');
+      } else if (msg.includes('network') || msg.includes('failed fetching') || msg.includes('failed to fetch')) {
+        // Network-related friendly message
+        showAlert('Network error. Please check your connection and try again.', 'warning');
+      } else {
+        // Generic fallback message
+        showAlert('Unable to get weather. Please try again later.', 'warning');
+      }
     }
   }
 

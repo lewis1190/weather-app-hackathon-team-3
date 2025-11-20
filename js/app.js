@@ -1,7 +1,7 @@
 import { updateForecastUI } from './five-day-forecast.js';
 import { saveLocation, removeLocation, isLocationSaved } from './save-location.js';
 
-// MyForecast JavaScript
+// TrueWeather JavaScript
 // Replace with your OpenWeatherMap API key
 
 // Lewis API Key - Replace with your own - 0bcd555b9f589fa92e927350a8fed8e4

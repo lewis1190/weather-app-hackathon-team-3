@@ -1,4 +1,5 @@
 import { getSavedLocations } from '../js/save-location.js';
+import { removeLocation } from '../js/save-location.js';
 
 // MyForecast JavaScript
 // Replace with your OpenWeatherMap API key
@@ -40,9 +41,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   function renderCards(favoriteLocationsData) {
-    const mainContainer = document.querySelector('main');
-
-    const favoriteLocationsContainer = document.getElementById('favorite-locations-container');
     const favoriteLocationsCards = document.getElementById('favorite-locations-cards');
 
     favoriteLocationsCards.innerHTML = '';
@@ -80,11 +78,19 @@ document.addEventListener('DOMContentLoaded', async () => {
       favoriteLocationsCards.appendChild(card);
     });
 
-    // Add event listeners to dynamically created buttons
     document.querySelectorAll('.remove-btn').forEach((btn) => {
       btn.addEventListener('click', (e) => {
-        // TODO: Implement remove location functionality
-        e.target.closest('.card').remove();
+        const city = btn.dataset.city;
+        const country = btn.dataset.country;
+
+        if (confirm(`Are you sure you want to remove ${city}, ${country} from your favorites?`)) {
+          if (removeLocation(city, country)) {
+            e.target.closest('.col-8').remove();
+            showAlert('Location removed from favorites', 'success', 2000);
+          } else {
+            showAlert('Error removing location', 'danger');
+          }
+        }
       });
     });
 

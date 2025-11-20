@@ -9,7 +9,7 @@ The site was fully responsive for mobile, tablet, and desktop. Screenshots of ht
 
 The map shown at startup resizes dynamically to fit the screen.
 
-![site shown on large monitor, laptop, tablet, phone screen](assets\images-readme\WPResponsive.png)
+![site shown on large monitor, laptop, tablet, phone screen](/assets/images-readme/WPResponsive.png)
 
 
 

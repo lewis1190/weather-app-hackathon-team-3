@@ -107,13 +107,6 @@ There are 2 buttons displayed: "Hourly" and "Daily", which allow the user to tog
 
 The forecast section displays the weather forecast depending on which button the user clicks (hourly or daily). For hourly, the weather shows every 3 hours starting from the next slot after the current time.
 
-![Forecast Weather Section - hourly](documentation/forecast-hourly-2-cards.png)
-
-![Forecast Weather Section - hourly (all)](documentation/forcast-cards-all-hours.png)
-
-For daily, the weather shows the next 5 days including today.
-
-![Forecast Weather Section - daily](documentation/forecast-daily.png)
 ### Scroll to Top Button
 
 Dynamic scroll to top button using JavaScript lets users jump back to the top of the page instantly, making browsing smooth and frustration free.

@@ -331,8 +331,7 @@ All colours pass the WCAG standards. There is just one colour combination that f
 
 #### Performance
 
-![lighthouse results](/assets/images-readme/Lighthouse.png
-assets/)
+![lighthouse results](assets/images-readme/Lighthouse.png)
 
 Most of the fall in the lighthouse performance scores can be attributed to the mapbox integration, which is quite resource-intensive.
 

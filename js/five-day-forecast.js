@@ -35,8 +35,8 @@ export function updateForecastUI(forecastData) {
   // Create cards for each day
   dailyForecasts.forEach((weather) => {
     const date = new Date(weather.dt * 1000);
-    const dayOfWeek = date.toLocaleDateString('en-US', { weekday: 'short' });
-    const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    const dayOfWeek = date.toLocaleDateString('en-GB', { weekday: 'short' });
+    const dateStr = date.toLocaleDateString('en-GB', { month: 'short', day: 'numeric' });
     const icon = weather.weather?.[0]?.icon;
     const description = weather.weather?.[0]?.description || 'N/A';
     const tempMax = Math.round(weather.main.temp_max);

@@ -247,6 +247,15 @@ footer { margin-top: auto; }
 .btn-blue:hover { filter: brightness(0.98); }
 .btn-blue.active, .btn-blue:active, .btn-blue[aria-pressed="true"] { box-shadow: 0 8px 24px rgba(13,110,253,0.18); transform: translateY(-2px); }
 
+/* Equal-width view toggle buttons (Hourly / Daily / Weekly) */
+.view-toggle-group { display:flex; justify-content:center; align-items:center; gap:0.75rem; margin-bottom: 1rem; }
+.view-toggle-group .btn { flex: 0 0 140px; white-space: nowrap; text-align: center; }
+
+@media (max-width: 576px) {
+  .view-toggle-group { gap: 0.5rem; }
+  .view-toggle-group .btn { flex: 1 1 auto; min-width: 0; }
+}
+
 /* Weather card container: center and limit width for today's card */
 #weatherCardContainer { width: 100%; display:flex; justify-content:center; margin-top: 0.5rem; }
 #weather-card { width: 100%; max-width: 820px; }

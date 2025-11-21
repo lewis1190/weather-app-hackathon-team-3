@@ -43,20 +43,11 @@ function buildWeatherUrl({ city, lat, lon } = {}) {
 function debugApiKey() {
   try {
     const masked = API_KEY && API_KEY.length > 8 ? `${API_KEY.slice(0,4)}...${API_KEY.slice(-4)}` : (API_KEY || '(none)');
-    console.info('OpenWeatherMap API key:', masked);
+    console.info('OpenWeatherMap API key: a39a01836baa52d8ccc9a26a6da70afd', masked);
     if (!hasValidApiKey()) {
-      // Insert a small warning banner at the top of <main> (do not use showAlert to avoid redirect)
-      const main = document.querySelector('main') || document.body;
-      const existing = document.getElementById('api-key-warning');
-      if (!existing) {
-        const warn = document.createElement('div');
-        warn.id = 'api-key-warning';
-        warn.className = 'alert alert-warning';
-        warn.style.margin = '0 0 1rem 0';
-        warn.role = 'alert';
-        warn.innerHTML = `OpenWeatherMap API key not configured. To run the app, create <code>config.local.js</code> in the project root with <code>window.OPENWEATHER_API_KEY = 'YOUR_KEY'</code>. See <code>config.sample.js</code>.`;
-        main.prepend(warn);
-      }
+        // Do not insert a visible DOM warning here to avoid cluttering pages.
+        // Log a clear developer message to the console with steps to generate the frontend config.
+        console.warn('OpenWeatherMap API key not configured. Set the env var OPENWEATHER_API_KEY or add it to a local .env file, then run scripts/generate-config.js (or scripts\\generate-config.ps1 on Windows) to create config.local.js and reload the page. See README for details.');
     }
   } catch (e) {
     console.warn('API key debug failed', e);
@@ -151,33 +142,7 @@ function ensureWeatherCardExists() {
   }
 }
 
-// Build forecast URL for OpenWeatherMap 5-day/3-hour endpoint
-function buildForecastUrl(city) {
-  if (!city) throw new Error('City required for forecast');
-  if (/^https?:\/\//i.test(API_KEY)) {
-    // If API_KEY is a template URL, try to use it for forecast if possible
-    let tpl = API_KEY;
-    if (tpl.includes('{city}')) {
-      tpl = tpl.replace(/\{city\}/g, encodeURIComponent(city));
-      return tpl + (tpl.includes('?') ? '&' : '?') + 'units=metric';
-    }
-    // otherwise fall through to normal construction
-  }
-  return `https://api.openweathermap.org/data/2.5/forecast?q=${encodeURIComponent(city)}&units=metric&appid=${encodeURIComponent(API_KEY)}`;
-}
-
-async function getForecastByCity(city) {
-  try {
-    const url = buildForecastUrl(city);
-    const data = await fetchWeatherJson(url);
-    // cache and render
-    lastForecastData = data;
-    render5DayForecast(data);
-    return data;
-  } catch (err) {
-    console.warn('Failed to fetch 5-day forecast', err);
-  }
-}
+// 5-day forecast helpers moved to `js/5-day-forecast.js` to keep app.js smaller.
 
 function renderHourlyForecast(forecastData, hoursWindow = 12) {
   if (!forecastData || !forecastData.list) return;
@@ -225,73 +190,7 @@ function renderHourlyForecast(forecastData, hoursWindow = 12) {
   } catch (e) { /* ignore */ }
 }
 
-// Build One Call (daily) URL for weekly forecast by coordinates
-function buildOneCallUrl(lat, lon) {
-  if (lat == null || lon == null) throw new Error('lat/lon required for onecall');
-  if (!hasValidApiKey()) throw new Error('API key required for One Call API');
-  return `https://api.openweathermap.org/data/2.5/onecall?lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(lon)}&exclude=minutely,hourly,alerts&units=metric&appid=${encodeURIComponent(API_KEY)}`;
-}
-
-async function getWeeklyByCoords(lat, lon) {
-  try {
-    const url = buildOneCallUrl(lat, lon);
-    const data = await fetchWeatherJson(url);
-    // note: One Call response shape differs from forecast — store under lastForecastData.weekly for caching
-    lastForecastData = lastForecastData || {};
-    lastForecastData.weekly = data;
-    renderWeeklyForecast(data);
-    return data;
-  } catch (err) {
-    console.warn('Failed to fetch weekly forecast', err);
-    throw err;
-  }
-}
-
-function renderWeeklyForecast(oneCallData) {
-  if (!oneCallData || !oneCallData.daily) return;
-  const container = document.getElementById('forecast-weekly');
-  const dailyContainer = document.getElementById('forecast-5day');
-  const hourlyContainer = document.getElementById('forecast-hourly');
-  if (dailyContainer) dailyContainer.style.display = 'none';
-  if (hourlyContainer) hourlyContainer.style.display = 'none';
-  if (!container) return;
-  container.style.display = 'flex';
-  container.innerHTML = '';
-
-  const days = oneCallData.daily.slice(0, 7);
-  days.forEach(day => {
-    const d = new Date(day.dt * 1000);
-    const dayName = d.toLocaleDateString(undefined, { weekday: 'short' });
-    const icon = day.weather && day.weather[0] && day.weather[0].icon ? day.weather[0].icon : '';
-    const desc = day.weather && day.weather[0] && day.weather[0].description ? day.weather[0].description : '';
-    const min = Math.round(day.temp.min);
-    const max = Math.round(day.temp.max);
-    const pop = typeof day.pop === 'number' ? Math.round(day.pop * 100) : null;
-
-    const el = document.createElement('div');
-    el.className = 'forecast-card p-3 text-center';
-    el.style.minWidth = '120px';
-    el.style.flex = '1 0 140px';
-    el.innerHTML = `
-      <div class="fw-bold mb-2">${dayName}</div>
-      <div class="mb-2">${ icon ? `<img src="https://openweathermap.org/img/wn/${icon}@2x.png" width="56" height="56" alt="${desc}">` : '' }</div>
-      <div class="small text-muted mb-2">${desc}</div>
-      <div class="h5 mb-0">${max}°</div>
-      <div class="text-muted">${min}° ${pop!=null?('| ' + pop + '%') : ''}</div>
-    `;
-    container.appendChild(el);
-  });
-
-  // update button active state
-  try {
-    const hourlyBtnEl = document.getElementById('hourlyButton');
-    const dailyBtnEl = document.getElementById('dailyButton');
-    const weeklyBtnEl = document.getElementById('weeklyButton');
-    if (weeklyBtnEl) { weeklyBtnEl.classList.add('active'); weeklyBtnEl.setAttribute('aria-pressed', 'true'); }
-    if (hourlyBtnEl) { hourlyBtnEl.classList.remove('active'); hourlyBtnEl.setAttribute('aria-pressed', 'false'); }
-    if (dailyBtnEl) { dailyBtnEl.classList.remove('active'); dailyBtnEl.setAttribute('aria-pressed', 'false'); }
-  } catch (e) { /* ignore */ }
-}
+// Weekly forecast helpers moved to `js/weekly-forecast.js` to keep app.js smaller.
 
 function render5DayForecast(forecastData) {
   if (!forecastData || !forecastData.list) return;
@@ -482,7 +381,7 @@ function setMapView(lat, lon, label) {
 
 async function getWeatherByCity(city) {
   if (!hasValidApiKey()) {
-    showAlert('Please set your OpenWeatherMap API key in js/app.js', 'warning', 8000);
+    showAlert('OpenWeatherMap API key not configured. Set the env var OPENWEATHER_API_KEY (or add it to .env) and run scripts/generate-config.js (or scripts\\generate-config.ps1 on Windows) to create config.local.js, then reload.', 'warning', 10000);
     return;
   }
   try {
@@ -500,7 +399,7 @@ async function getWeatherByCity(city) {
 
 async function getWeatherByCoords(lat, lon) {
   if (!hasValidApiKey()) {
-    showAlert('Please set your OpenWeatherMap API key in js/app.js', 'warning', 8000);
+    showAlert('OpenWeatherMap API key not configured. Set the env var OPENWEATHER_API_KEY (or add it to .env) and run scripts/generate-config.js (or scripts\\generate-config.ps1 on Windows) to create config.local.js, then reload.', 'warning', 10000);
     return;
   }
   try {
@@ -651,13 +550,25 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   if (dailyBtn) {
     dailyBtn.addEventListener('click', async () => {
-      if (!currentCity) { showAlert('Please search for a city first', 'warning'); return; }
       try {
+        // Prefer cached forecast data when available
         let data = null;
-        if (lastForecastData && lastForecastData.city && lastForecastData.city.name && lastForecastData.city.name.toLowerCase() === String(currentCity).toLowerCase()) {
+        if (lastForecastData && lastForecastData.list) {
           data = lastForecastData;
         } else {
-          data = await getForecastByCity(currentCity);
+          // Try to determine a city to fetch forecast for: currentCity first, then the displayed city text
+          let city = currentCity;
+          if (!city) {
+            const cityEl = document.getElementById('weather-city');
+            if (cityEl && cityEl.textContent) {
+              city = cityEl.textContent.split(',')[0].trim();
+            }
+          }
+          if (!city) {
+            showAlert('Please search for a city first', 'warning');
+            return;
+          }
+          data = await getForecastByCity(city);
         }
         if (data) render5DayForecast(data);
       } catch (e) {

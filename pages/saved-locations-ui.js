@@ -66,7 +66,7 @@ document.addEventListener('DOMContentLoaded', async () => {
               <h1 class="display-4 mb-0">${Math.round(combinedData.weatherData.main.temp)}°C</h1>
               <div class="small text-muted">Last updated: ${new Date().toLocaleString()}</div>
             </div>
-            <div class="ms-md-auto py-2 pe-2">
+            <div class="ms-md-auto py-2 pe-2 text-sm-end">
               <div>Feels like: <span id="weather-feels-like">${Math.round(
                 combinedData.weatherData.main.feels_like
               )}</span>°C</div>

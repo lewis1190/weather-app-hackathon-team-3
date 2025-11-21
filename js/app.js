@@ -160,10 +160,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Update sunrise and sunset times
     document.getElementById('weather-sunrise').textContent = convertSunTimeToDisplayTime(
-      weatherData.sys?.sunrise
+      weatherData.sys?.sunrise, weatherData.timezone
     );
     document.getElementById('weather-sunset').textContent = convertSunTimeToDisplayTime(
-      weatherData.sys?.sunset
+      weatherData.sys?.sunset, weatherData.timezone
     );
 
     const icon = weatherData.weather?.[0]?.icon;
@@ -218,10 +218,10 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function refreshBtnHandler() {
-    if (currentCity) {
-      getWeatherByCity(currentCity);
-    } else if (currentCoords) {
+    if (currentCoords) {
       getWeatherByCoords(currentCoords.lat, currentCoords.lon);
+    } else if (currentCity) {
+      getWeatherByCity(currentCity);
     } else {
       showAlert('No location to refresh. Search a city or use your location.', 'warning');
     }
@@ -264,9 +264,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     if (event.target.checked) {
       autoRefreshTimer = setInterval(() => {
-        if (currentCity) {
-          getWeatherByCity(currentCity);
-        } else if (currentCoords) getWeatherByCoords(currentCoords.lat, currentCoords.lon);
+        if (currentCoords) {
+          getWeatherByCoords(currentCoords.lat, currentCoords.lon);
+        } else if (currentCity) getWeatherByCity(currentCity);
       }, minutes * 60 * 1000);
       showAlert(`Auto-refresh enabled (${minutes} minute${minutes > 1 ? 's' : ''})`, 'info', 3000);
     } else {

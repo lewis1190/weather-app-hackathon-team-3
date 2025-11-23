@@ -69,12 +69,28 @@ This section will detail a brief overview of how we collaborated effectively to 
 
 - We began by brainstorming ideas for the project, discussing potential features and functionalities we wanted to include in our weather app. We verbally discussed the core features that would form the MVP of our app, as well as any additional features we could implement if time allowed.
 - Once we had a clear vision for the project, we set up our GitHub repository and created a project board to manage our tasks.
+- We looked into existing weather apps and websites, to get inspiration for our own design and functionality. Notable inspirations include:
+  - [The Met Office](https://weather.metoffice.gov.uk/)
+  - [AccuWeather](https://www.accuweather.com/en/gb/bristol/bs1-6/weather-forecast/327328)
+  - [WeatherWise](https://web.weatherwise.app/#map=19.28/51.5052952/-2.616259)
 - We created a collaborative Google Doc to outline rough user stories, acceptance criteria, and tasks. We also discussed other things, such as recommended AI models to use in Copilot to help us speed up development. We also outlined the which Weather API we'd use, and what map library we'd use if we had time to implement it.
 - You can view this initial project doc [here](https://docs.google.com/document/d/1AM4e3hyXT1a1WAf62WY3DitrO5X51RS6JH-f4r6yObU/edit?tab=t.0) (view only).
   - Later on in the project, we'd also use this doc to list any tech-debt that we may need to account for at the end of the project.
 
 ![A screenshot of our collab doc on Google Docs](./readme_assets/collab_doc_screenshot.png)
-*A screenshot of our collab doc on Google Docs*
+_A screenshot of our collab doc on Google Docs_
+
+As we have active subscriptions to GitHub Copilot, we wanted to see how far the AI could get, if we fed all of our user stories into a single prompt. We gave it everything it needed and let it generate. It produced this:
+
+![What the AI produced in a single prompt with all of our user stories](readme_assets/design/ai-mockups/ai-one-prompt.webp)
+
+![The AI's response to the codebase generated](readme_assets/design/ai-mockups/ai-one-prompt-2.webp)
+
+Not great, but far from terrible! Whilst we didn't use much of the code produced in this prompt, it was great to get more visual ideas on how we could structure the site, and what components we could use.
+
+![An AI generated image of a weather site, from ChatGPT](readme_assets/design/ai-mockups/site-generated-image.webp)
+
+We also used ChatGPT to generate an image of what a weather app site **could** look like, rather than generating code. Again, all of this helped us to brainstorm ideas that we would then implement via the Balsamiq wireframes later on.
 
 ### Tuesday - User Stories, Designs and Wireframes
 
@@ -106,7 +122,7 @@ This section will detail a brief overview of how we collaborated effectively to 
 - "single-purpose" branches - Lewis would create a new branch for each fix or feature he worked on. This would follow the format of `feat/short-description` or `fix/short-description`. This approach allowed for more granular control over each change, making it easier to review and test individual features or fixes before merging them back into the `develop` branch. Once he was finished with a branch, he would delete it. Any further changes would be made in a new branch.
 
 ![Our GitHub branch structure](./readme_assets/wireframes/lewis-balsamiq/github_branches.png)
-*Our GitHub branch structure*
+_Our GitHub branch structure_
 
 ## Beyond the MVP
 
@@ -205,7 +221,6 @@ We put together a sitemap to help us visualize the structure of the site, and ho
 ### Jonnie's Wireframes
 
 <details>
-
 
 <summary>Wireframes here (click to expand)</summary>
 

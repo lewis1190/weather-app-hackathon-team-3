@@ -1,3 +1,10 @@
+/*
+* Prefixed by https://autoprefixer.github.io
+* PostCSS: v8.4.14,
+* Autoprefixer: v10.4.7
+* Browsers: last 4 version
+*/
+
 /* Global Styles  */
 html,
 body {
@@ -6,13 +13,20 @@ body {
 
 body {
   background: #f6f8fa;
+  display: -webkit-box;
+  display: -ms-flexbox;
   display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -ms-flex-direction: column;
   flex-direction: column;
   font-family: 'Open Sans', sans-serif;
 }
 
 /* Ensures the footer remains at the bottom */
 main {
+  -webkit-box-flex: 1;
+  -ms-flex: 1;
   flex: 1;
 }
 
@@ -36,10 +50,13 @@ body {
 }
 
 #weather-icon {
+  -webkit-filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.12));
   filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.12));
 }
 
 #weather-card .card-body {
+  -webkit-box-align: center;
+  -ms-flex-align: center;
   align-items: center;
 }
 
@@ -67,16 +84,28 @@ body {
 
 /* Forecast card styling */
 .forecast-card {
+  -webkit-transition: -webkit-box-shadow 0.2s;
+  transition: -webkit-box-shadow 0.2s;
+  -o-transition: box-shadow 0.2s;
   transition: box-shadow 0.2s;
+  transition: box-shadow 0.2s, -webkit-box-shadow 0.2s;
 }
 
 .forecast-card:hover {
+  -webkit-box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
 }
 
 .forecast-card .card-body {
+  display: -webkit-box;
+  display: -ms-flexbox;
   display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -ms-flex-direction: column;
   flex-direction: column;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
   align-items: center;
   text-align: center;
 }
@@ -84,6 +113,7 @@ body {
 .forecast-icon {
   width: 64px;
   height: 64px;
+  -webkit-filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
 }
 
@@ -97,6 +127,7 @@ footer .container {
 }
 footer {
   margin-top: auto;
+  -ms-flex-negative: 0;
   flex-shrink: 0;
 }
 /* Footer icon styles */
@@ -107,6 +138,8 @@ footer {
 }
 .footer-icon {
   display: inline-block;
+  -webkit-box-flex: 0;
+  -ms-flex: 0 0 18px;
   flex: 0 0 18px;
   fill: currentColor;
 }
@@ -118,6 +151,9 @@ footer {
 /* Media queries */
 @media (max-width: 576px) {
   #weather-card .card-body {
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
     flex-direction: column;
     gap: 0.5rem;
     text-align: center;

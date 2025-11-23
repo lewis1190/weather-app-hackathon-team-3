@@ -67,7 +67,7 @@ The use of generative AI played a key role in the development of this project. A
 ### Leftovers / Cut Features / Other TODOs / Tech Debt
 
 - **Map Integration**: Initially, we wanted to integrate a map feature using the [MapBox](https://www.mapbox.com/) library to allow users to visually select locations, and visually display the conditions on a map. However, due to time constraints, this feature was not implemented in the final version.
-- **Consolidation of API Functions / Deprecating the "Search By City" function**: When building the foundation code for the site, we created two separate functions to fetch weather data: one for searching by city name, and another for searching by geographic coordinates (latitude and longitude). However, after further consideration, we realized that the "Search By City" function was deprecated by the OpenWeatherMap API in favor of using geographic coordinates. If we wanted to search by city, we should use their Geocoding API to convert city names into coordinates, and then use those coordinates to fetch the weather data. This consolidation would streamline our codebase and enforce DRY coding principles. Due to time constraints, we were unable to implement this change before the project deadline.
+- **Consolidation of API Functions / Deprecating the "Search By City" function**: When building the foundation code for the site, we created two separate functions to fetch weather data: one for searching by city name, and another for searching by geographic coordinates (latitude and longitude). During development, we realized that the "Search By City" function was deprecated by the OpenWeatherMap API in favor of using geographic coordinates. If we wanted to search by city, we should use their Geocoding API to convert city names into coordinates, and then use those coordinates to fetch the weather data. This consolidation would streamline our codebase and enforce DRY coding principles. Due to time constraints, we were unable to implement this change before the project deadline.
 - **Repo-wide JSDoc Documentation**: Inside our `saved-locations.js` file, we use JSDoc comments to document our functions and variables. However, we did not have time to implement this documentation style across the entire codebase. This is something we would like to address in future iterations of the project to improve code maintainability and clarity.
 
 A live version of the site can be accessed [via GitHub Pages](https://lewis1190.github.io/weather-app-hackathon-team-3/).
@@ -80,20 +80,20 @@ This section will detail a brief overview of how we collaborated effectively to 
 
 ### Monday - Project Kickoff and Initial Setup
 
-- We began by brainstorming ideas for the project, discussing potential features and functionalities we wanted to include in our weather app. We verbally discussed the core features that would form the MVP of our app, as well as any additional features we could implement if time allowed.
+- We began by brainstorming ideas for the project, discussing potential features and functionality we wanted to include in our app. We verbally discussed the core features that would form the MVP of our app; and any additional features that we might implement if time allowed.
 - Once we had a clear vision for the project, we set up our GitHub repository and created a project board to manage our tasks.
 - We looked into existing weather apps and websites, to get inspiration for our own design and functionality. Notable inspirations include:
   - [The Met Office](https://weather.metoffice.gov.uk/)
   - [AccuWeather](https://www.accuweather.com/en/gb/bristol/bs1-6/weather-forecast/327328)
   - [WeatherWise](https://web.weatherwise.app/#map=19.28/51.5052952/-2.616259)
-- We created a collaborative Google Doc to outline rough user stories, acceptance criteria, and tasks. We also discussed other things, such as recommended AI models to use in Copilot to help us speed up development. We also outlined the which Weather API we'd use, and what map library we'd use if we had time to implement it.
+- We created a collaborative Google Doc to outline rough user stories, their acceptance criteria, and their tasks. We also discussed other things, such as recommended AI models to use in Copilot to help us speed up development. We outlined which Weather API we'd use, and what map library we'd use if we had the time to implement it.
 - You can view this initial project doc [here](https://docs.google.com/document/d/1AM4e3hyXT1a1WAf62WY3DitrO5X51RS6JH-f4r6yObU/edit?tab=t.0) (view only).
   - Later on in the project, we'd also use this doc to list any tech-debt that we may need to account for at the end of the project.
 
 ![A screenshot of our collab doc on Google Docs](./readme_assets/collab_doc_screenshot.png)
 _A screenshot of our collab doc on Google Docs_
 
-As we have active subscriptions to GitHub Copilot, we wanted to see how far the AI could get, if we fed all of our user stories into a single prompt. We gave it everything it needed and let it generate. It produced this:
+As we have active subscriptions to GitHub Copilot, we wanted to see how far the AI could get if we fed all of our user stories into a single prompt. We gave it everything it needed and let it generate. It produced this:
 
 ![What the AI produced in a single prompt with all of our user stories](readme_assets/design/ai-mockups/ai-one-prompt.webp)
 
@@ -141,7 +141,7 @@ _Our GitHub branch structure_
 
 As Veena's tasks primarily involved building the core of the site, she was finished with her assigned user stories quite quickly. As she had some time left before the deadline, she decided to work on some additional features that were not part of the original MVP in her own branch, such as the "Heat Map" functionality, and a general design refresh of the site that went beyond what comes out of the box in Bootstrap 5.
 
-Veena's work and report on these additional features can be found in her branch of the repository here: [veena-branch](https://github.com/lewis1190/weather-app-hackathon-team-3/tree/veena-branch)
+Veena's additional work and report on these extra features can be found in her branch of the repository here: [veena-branch](https://github.com/lewis1190/weather-app-hackathon-team-3/tree/veena-branch)
 
 ## Site Screenshots
 
@@ -277,6 +277,7 @@ Below are the top-level user stories only. The full list with acceptance criteri
 - As a user, I want to see UV index information so that I know if I need sun protection
 
 ![Screenshot from our GitHub Projects page for TrueWeather](./readme_assets/project_board.png)
+_Screenshot from our GitHub Projects page for TrueWeather_
 
 ## Testing and Validation
 

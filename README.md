@@ -29,15 +29,14 @@ A static, fully responsive website built with a focus on accessibility, clean de
 
 Page-by-page, the site includes:
 
-- **Home Page / Search Page**:
-- **Saved Locations Page**:
+- **Home Page / Search Page**: A page that allows you to search for weather information by city name or by using your current location taken from your browser. When viewing a location, you can see current weather conditions, a 5-day forecast, air quality index (AQI), sunrise and sunset times, and other relevant weather data. You can also save locations to your "Saved Locations" page for quick access later on.
+- **Saved Locations Page**: A page that displays all of your saved locations, allowing you to quickly switch between them to view their current weather conditions. You can also remove locations from this page if you no longer wish to keep them.
 
 ### Standout Features
 
 - **Bootstrap 5**: Utilizes the latest version of Bootstrap for a modern, responsive layout.
 - **Responsive**: Optimized for all devices, ensuring usability on desktops, tablets, and smartphones.
 - **Framework / Component-ready**: Modular HTML structure with clear class names for easy updates and maintenance. Can easily be integrated into frameworks like React or Vue.
-- **Aggressive Optimization of Assets**: The Lighthouse audit tool from Chrome DevTools highlighted to us that our images were unnecessarily large in size, which was impacting the performance score of our site. We used [Cloudinary](https://cloudinary.com/tools/png-to-webp) to compress our images and convert them from `.png` format to `.webp` format, which reduced our total image asset size by **_~90%_**!
 
 ### "The AI Bit"; how we used AI in this project
 
@@ -183,15 +182,9 @@ Below are a collection of screenshots of me using all of the above tools.
 
 <summary>W3C Validator Screenshots (click to expand)</summary>
 
-![W3C Validator Screenshot for Home Page](./docs/images/html-validation/index.png)
+![W3C Validator Screenshot for Home Page](./readme_assets/validation/html/index.png)
 
-![W3C Validator Screenshot for About Page](./docs/images/html-validation/about-us.png)
-
-![W3C Validator Screenshot for Mental Health Resources Page](./docs/images/html-validation/mental-health-resources.png)
-
-![W3C Validator Screenshot for Contact Us Page](./docs/images/html-validation/contact-us.png)
-
-![W3C Validator Screenshot for Form Received Page](./docs/images/html-validation/contact-received.png)
+![W3C Validator Screenshot for Saved Locations Page](./readme_assets/validation/html/saved-locations.png)
 
 </details>
 
@@ -201,7 +194,7 @@ Below are a collection of screenshots of me using all of the above tools.
 
 <summary>CSS Validator Screenshot (click to expand)</summary>
 
-![CSS Validator Screenshot for styles.css](./docs/images/css-validation.png)
+![CSS Validator Screenshot for styles.css](./readme_assets/validation/css/styles.png)
 
 </details>
 
@@ -211,7 +204,7 @@ Below are a collection of screenshots of me using all of the above tools.
 
 <summary>AutoPrefixer Usage Screenshot (click to expand)</summary>
 
-![AutoPrefixer Usage Screenshot for styles.css](./docs/images/autoprefixer-usage.png)
+![AutoPrefixer Usage Screenshot for styles.css](./readme_assets/validation/css/autoprefixer.png)
 
 </details>
 
@@ -221,14 +214,8 @@ Below are a collection of screenshots of me using all of the above tools.
 
 <summary>Lighthouse Audits Screenshots (click to expand)</summary>
 
-![Lighthouse Audits Screenshot for Home Page](./docs/images/lighthouse/index.png)
+![Lighthouse Audits Screenshot for Home Page](./readme_assets/validation/lighthouse/index.png)
 
-![Lighthouse Audits Screenshot for About Page](./docs/images/lighthouse/about-us.png)
-
-![Lighthouse Audits Screenshot for Mental Health Resources Page](./docs/images/lighthouse/mental-health-resources.png)
-
-![Lighthouse Audits Screenshot for Contact Us Page](./docs/images/lighthouse/contact-us.png)
-
-![Lighthouse Audits Screenshot for Form Received Page](./docs/images/lighthouse/contact-received.png)
+![Lighthouse Audits Screenshot for Saved Locations Page](./readme_assets/validation/lighthouse/saved-locations.png)
 
 </details>

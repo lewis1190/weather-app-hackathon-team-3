@@ -1,13 +1,13 @@
-# Helping Hands
+# TrueWeather - Hackathon Group 3
 
 ## Table of Contents
 
 - [Introduction](#introduction)
-  - [What "Helping Hands" Is](#what-helping-hands-is)
+  - [What "TrueWeather" Is](#what-trueweather-is)
   - [Standout Features](#standout-features)
-  - ["The AI Bit"; how I used AI in this project](#the-ai-bit-how-i-used-ai-in-this-project)
+  - ["The AI Bit"; how we used AI in this project](#the-ai-bit-how-we-used-ai-in-this-project)
   - [Copyright / DMCA Compliance](#copyright--dmca-compliance)
-  - [Leftovers / Cut Features / Other TODOs](#leftovers--cut-features--other-todos)
+  - [Leftovers / Cut Features / Other TODOs / Tech Debt](#leftovers--cut-features--other-todos--tech-debt)
 - [Site Screenshots](#site-screenshots)
 - [UX / UI Design](#ux--ui-design)
   - [Fonts and Typography](#fonts-and-typography)
@@ -42,7 +42,7 @@ Page-by-page, the site includes:
 
 The use of generative AI played a key role in the development of this project. AI allowed us to stay efficient and keep working to deliver maximum output on the short deadline that this assignment had:
 
-- **Layout and Scaffolding**: When dealing with complex layouts (e.g. the mental health info panels), we asked Copilot to generate the rough grid structure in HTML and Bootstrap classes. These often had small styling issues, so a full understanding of Bootstrap and HTML was required from us in order to tweak the styles to exactly how I wanted them.
+- **Layout and Scaffolding**: When dealing with complex layouts (e.g. the mental health info panels), we asked Copilot to generate the rough grid structure in HTML and Bootstrap classes. These often had small styling issues, so a full understanding of Bootstrap and HTML was required from us in order to tweak the styles to exactly how we wanted them.
 - **Codebase-wide Validation**: When we were nearing the completion of our MVP, we asked Copilot to scan our entire codebase for any common mistakes, like incorrect semantics of HTML elements, and inconsistent / redundant CSS classes. Copilot provided us with a list of potential issues, and offered to fix them for us. We applied and tested each change one at a time to ensure nothing broke, and never let it add any HTML or CSS that we didn't fully understand.
 - **Codebase-wide Repetitive Tasks**: When we had created all of the individual pages and content for the site, we needed to ensure all of our navigation links were correct across every page. We used Copilot to scan our codebase and update all of the `<nav>` and `<a>` elements to ensure that the everything clickable led to the right area. This saved a huge amount of time compared to manually correcting **EVERY** nav link in **EVERY** navbar in **EVERY** file.
 - **Documentation Clarity**: We used ChatGPT to help us proofread and clarify sections of this README file, ensuring that our explanations made sense. We also used it to generate the contents page at the top of this README!
@@ -103,7 +103,7 @@ A live version of the site can be accessed [via GitHub Pages](https://lewis1190.
 
 - [Fontawesome](https://fontawesome.com/) for icons to enhance visual appeal and usability. Used for the social media icons, and the tick in the page after a user submits any contact form.
 
-- [Google Fonts](https://fonts.google.com/) for the fonts; I used the font 'Poppins' for headings and body text. I chose a single font here, as that was my intended branding and design for the site to keep it as clean and accessible as possible.
+- [Google Fonts](https://fonts.google.com/) for the fonts; we used the font 'Poppins' for headings and body text. We chose a single font here, as that was our intended branding and design for the site to keep it as clean and accessible as possible.
 
 ### Color Palette
 
@@ -117,7 +117,7 @@ We passed ideas for branding and characters back and forth with ChatGPT to see w
 
 ![Our initial prompt for ChatGPT that helped us decide on the brand for the site](./readme_assets/design/mockup.webp)
 
-Above is my initial prompt to ChatGPT that helped me decide on the brand for the site. I was really happy with the mockup it gave me, as it allowed me to visualize possible layouts before committing to a specific design.
+Above is our initial prompt to ChatGPT that helped us decide on the brand for the site. We were really happy with the mockup it gave us, as it allowed us to visualize possible layouts before committing to a specific design.
 
 ### Wireframes
 
@@ -129,21 +129,21 @@ We put together a sitemap to help us visualize the structure of the site, and ho
 
 #### Sitemap
 
-![My initial sitemap for the site](./readme_assets/wireframes/balsamic/sitemap.png)
+![Our initial sitemap for the site](./readme_assets/wireframes/balsamic/sitemap.png)
 
 #### Home Page Wireframe
 
-![My home page wireframe](./readme_assets/wireframes/balsamic/home.png)
+![Our home page wireframe](./readme_assets/wireframes/balsamic/home.png)
 
 #### About Page Wireframe
 
-![My about page wireframe](./readme_assets/wireframes/balsamic/saved_locations.png)
+![Our about page wireframe](./readme_assets/wireframes/balsamic/saved_locations.png)
 
 ## User Stories
 
-Below are the user stories I used to guide my development of the site. I briefed ChatGPT that we were creating a weather app, and wanted simple search functions, as well as allowing users to save locations for quick access later on.
+Below are the user stories we used to guide our development of the site. We briefed ChatGPT that we were creating a weather app, and wanted simple search functions, as well as allowing users to save locations for quick access later on.
 
-Below are the top-level user stories only. The full list with acceptance criteria and tasks can be found in the [Github project](https://github.com/users/lewis1190/projects/7/views/1) that I ran for this repo.
+Below are the top-level user stories only. The full list with acceptance criteria and tasks can be found in the [Github project](https://github.com/users/lewis1190/projects/7/views/1) that we ran for this repo.
 
 - As a user, I want to view the current weather conditions for my location (Using "Current Location") so that I can plan my day accordingly
 - As a user, I want to search for the current weather by entering a city name so I can see up-to-date weather information for that city.
@@ -166,15 +166,15 @@ Below are the top-level user stories only. The full list with acceptance criteri
 
 ## Testing and Validation
 
-Here are the tools I used to verify and validate my code during development:
+Here are the tools we used to verify and validate our code during development:
 
-- **[HTML Validator](https://validator.w3.org/)**: I used the W3C Markup Validation Service to check my HTML for any syntax errors or issues.
-- **[CSS Validator](https://jigsaw.w3.org/css-validator/)**: The W3C CSS Validation Service helped me ensure my stylesheets were error-free and followed best practices.
-- **[Autoprefixer for CSS](https://autoprefixer.github.io/)**: I used Autoprefixer to automatically add vendor prefixes to my CSS rules, ensuring better compatibility with different browsers such as Opera and Safari.
-- **[Lighthouse for Chrome DevTools](https://developers.google.com/web/tools/lighthouse)**: I used Lighthouse to audit my site for performance, accessibility, and SEO best practices. This was a great way to score my site and identify actionable steps I can take to increase the quality of my site.
-- **Physical Device Testing**: I tested the site on multiple physical devices, including an iPhone SE, a 2025 iPad, and a Windows 10 desktop and a OnePlus 6T to ensure consistent performance and appearance across different screen sizes and operating systems.
+- **[HTML Validator](https://validator.w3.org/)**: We used the W3C Markup Validation Service to check our HTML for any syntax errors or issues.
+- **[CSS Validator](https://jigsaw.w3.org/css-validator/)**: The W3C CSS Validation Service helped us ensure our stylesheets were error-free and followed best practices.
+- **[Autoprefixer for CSS](https://autoprefixer.github.io/)**: We used Autoprefixer to automatically add vendor prefixes to our CSS rules, ensuring better compatibility with different browsers such as Opera and Safari.
+- **[Lighthouse for Chrome DevTools](https://developers.google.com/web/tools/lighthouse)**: We used Lighthouse to audit our site for performance, accessibility, and SEO best practices. This was a great way to score our site and identify actionable steps we can take to increase the quality of our site.
+- **Physical Device Testing**: We tested the site on multiple physical devices, including an iPhone SE, a 2025 iPad, and a Windows 10 desktop and a OnePlus 6T to ensure consistent performance and appearance across different screen sizes and operating systems.
 
-Below are a collection of screenshots of me using all of the above tools.
+Below are a collection of screenshots of us using all of the above tools.
 
 ### HTML Validator
 

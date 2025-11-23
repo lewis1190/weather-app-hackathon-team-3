@@ -59,6 +59,61 @@ The use of generative AI played a key role in the development of this project. A
 
 A live version of the site can be accessed [via GitHub Pages](https://lewis1190.github.io/weather-app-hackathon-team-3/).
 
+## How we Worked as a Team
+
+This project was completed as part of a team of four during a 3.5 day hackathon. The team was made up of Lewis, Veena, Eldad and Jonnie. We used GitHub Projects to manage our tasks and track progress. Each team member was assigned specific user stories to work on, and we held regular check-ins to discuss our progress and any challenges we faced.
+
+This section will detail a brief overview of how we collaborated effectively to complete the project each day within the tight deadline.
+
+### Monday - Project Kickoff and Initial Setup
+
+- We began by brainstorming ideas for the project, discussing potential features and functionalities we wanted to include in our weather app. We verbally discussed the core features that would form the MVP of our app, as well as any additional features we could implement if time allowed.
+- Once we had a clear vision for the project, we set up our GitHub repository and created a project board to manage our tasks.
+- We created a collaborative Google Doc to outline rough user stories, acceptance criteria, and tasks. We also discussed other things, such as recommended AI models to use in Copilot to help us speed up development. We also outlined the which Weather API we'd use, and what map library we'd use if we had time to implement it.
+- You can view this initial project doc [here](https://docs.google.com/document/d/1AM4e3hyXT1a1WAf62WY3DitrO5X51RS6JH-f4r6yObU/edit?tab=t.0) (view only).
+  - Later on in the project, we'd also use this doc to list any tech-debt that we may need to account for at the end of the project.
+
+![A screenshot of our collab doc on Google Docs](./readme_assets/collab_doc_screenshot.png)
+*A screenshot of our collab doc on Google Docs*
+
+### Tuesday - User Stories, Designs and Wireframes
+
+- We created our user stories and acceptance criteria. We started off with simple user stories to make up our MVP, and also asked AI (ChatGPT) to help us brainstorm additional user stories that we could implement if time allowed.
+- We created wireframes for the main pages of the site using Balsamiq. Each team member would work on wireframes for the same page. This meant we could have a look and see which team members did things a bit differently, and refine the final design based on the best ideas from each team member.
+- We created a sitemap to help us visualize the structure of the site, and how the different pages would link together.
+- Towards the end of the day, we finalized the user stories and delegated all of the stories to team members based on their strengths and interests. We divided the work as equally as possible, meaning everyone had the same amount of "must-have", "should-have" and "could-have" stories to work on.
+
+### Wednesday - Code Crunch
+
+- We set up the initial project structure, including the HTML, CSS, and JavaScript files. Veena created the initial Bootstrap layout and navigation structure for the site, as well as the "first draft" of the fetching functions for the OpenWeatherMap API.
+- Lewis then worked on trying to simplify the foundation code for fetching weather data, so everything was easily readable and maintainable for the rest of the team.
+- Once the foundation was finalized, everybody branched off of the "develop" branch and started working on their assigned user stories. We made sure to commit and push our changes frequently, and created pull requests for each feature or bug fix to allow for code reviews.
+- We held regular check-ins throughout the day to discuss our progress, any challenges we faced, and to ensure that we were all on track to meet our deadlines. If anyone was stuck on any of the user stories, we would pair program to help them get past any blockers.
+
+### Thursday - Final Touches, Deployment, Validation and Documentation
+
+- We focused on testing and validating our code to ensure everything was working as expected. We used various tools to validate our HTML, CSS, and JavaScript code, and made any necessary adjustments based on the results.
+
+- We all ran a comprehensive testing session of the site, trying to break it and cause any errors on lots of different devices and browsers. If any bugs were found, we'd fix the issue and merge it back into the `develop` branch.
+
+- When we were happy to "release" the MVP, we merged the `develop` branch into the `main` branch, and deployed the site using GitHub Pages.
+
+## Branch Structure
+
+- `main` - The main branch contains the production-ready code for the website. This branch is protected and only updated through pull requests from the `develop` branch after thorough testing and code reviews.
+- `develop` - The develop branch is where all feature development and bug fixes take place. Developers will branch off of develop to work on user stories.
+- "named" branches - Veena, Jonnie and Eldad would create a branch based on their first name, and would tackle any user stories assigned to them. Once a feature or bug fix was complete, they'd create a pull request to merge their changes back into the `develop` branch for testing and review. They would continue working on these branches without creating new branches for each user story, to keep things simple and easy to manage.
+- "single-purpose" branches - Lewis would create a new branch for each fix or feature he worked on. This would follow the format of `feat/short-description` or `fix/short-description`. This approach allowed for more granular control over each change, making it easier to review and test individual features or fixes before merging them back into the `develop` branch. Once he was finished with a branch, he would delete it. Any further changes would be made in a new branch.
+
+![Our GitHub branch structure](./readme_assets/wireframes/lewis-balsamiq/github_branches.png)
+*Our GitHub branch structure*
+
+## Beyond the MVP
+
+As Veena's tasks primarily involved building the core of the site, she was finished with her assigned user stories quite quickly. As she had some time left before the deadline, she decided to work on some additional features that were not part of the original MVP in her own branch, such as the "Heat Map" functionality, and a general design refresh of the site that went beyond what comes out of the box in Bootstrap 5.
+
+Veena's work and report on these additional features can be found in her branch of the repository here: [veena-branch](https://github.com/lewis1190/weather-app-hackathon-team-3/tree/veena-branch)
+
 ## Site Screenshots
 
 ### Mobile Home Page (Simulated on an iPhone 12 Pro)
@@ -125,19 +180,50 @@ We used Balsamiq to create wireframes for the site before starting development. 
 
 We put together a sitemap to help us visualize the structure of the site, and how the different pages would link together. You can see the the initial sitemap, and how that compares to the MVP.
 
-**NOTE:** These images are quite large, so please right click and open them in a new tab if you're having trouble viewing them in full.
+**NOTE:** Some of these images are quite large, so please right click and open them in a new tab if you're having trouble viewing them in full.
+
+### Lewis' Wireframes
+
+<details>
+
+<summary>Wireframes here (click to expand)</summary>
 
 #### Sitemap
 
-![Our initial sitemap for the site](./readme_assets/wireframes/balsamic/sitemap.png)
+![Our initial sitemap for the site](./readme_assets/wireframes/lewis-balsamiq/sitemap.png)
 
 #### Home Page Wireframe
 
-![Our home page wireframe](./readme_assets/wireframes/balsamic/home.png)
+![Our home page wireframe](./readme_assets/wireframes/lewis-balsamiq/home.png)
 
 #### About Page Wireframe
 
-![Our about page wireframe](./readme_assets/wireframes/balsamic/saved_locations.png)
+![Our about page wireframe](./readme_assets/wireframes/lewis-balsamiq/saved_locations.png)
+
+</details>
+
+### Jonnie's Wireframes
+
+<details>
+
+
+<summary>Wireframes here (click to expand)</summary>
+
+![Homa Page on all 3 main resolutions](readme_assets/wireframes/jonnie/home.png)
+
+</details>
+
+### Veena's Wireframes
+
+<details>
+
+<summary>Wireframes here (click to expand)</summary>
+
+![Desktop Wireframe](readme_assets/wireframes/veena/desktop.png)
+
+![Mobile Wireframe](readme_assets/wireframes/veena/mobile.png)
+
+</details>
 
 ## User Stories
 

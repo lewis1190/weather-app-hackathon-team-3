@@ -50,7 +50,7 @@ Initially, we had thought to add a feature where users could see the weather fro
 
 ### Structure
 
-The structure of the site is simple as it is a one-page website with two navigations forecast and about. It includes a search bar at the top, an interactive heat-map button with auto-refresh under which weather cards are displayed, and buttons to select hourly and daily weather reports with update now button.
+The structure of the site is simple as it is a one-page website with two navigations forecast and about. It includes a search bar at the top, an auto-refresh control under which weather cards are displayed, and buttons to select hourly and daily weather reports with an "Update now" button.
 
 ### Skeleton
 
@@ -308,7 +308,7 @@ Images are generated using AI Copilot.
 
 #### Map
 
-Map: Toggle heat map works, buttons to the side work as expected (zoom and tilt). Map navigates to the location you search for, or your location when you select choose my location.
+Map: Map controls and zoom work as expected. The map navigates to the location you search for, or your location when you select "Use my location".
 
 ### Accessibility
 

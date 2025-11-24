@@ -18,6 +18,10 @@ footer .container { font-size: 0.9rem; }
   --glass: rgba(255,255,255,0.7);
   --radius: 12px;
   --max-width: 920px;
+  /* height of the top navigation/header (adjust as needed) */
+  --nav-height: 56px;
+  /* small vertical offset to nudge search controls down from the header */
+  --search-offset: 0.5rem;
 }
 
 body {
@@ -67,6 +71,8 @@ main.container { max-width: var(--max-width); padding-bottom: 3rem; }
   gap: 0.5rem;
   flex-wrap: nowrap;
   overflow-x: auto;
+  /* nudge the controls down a bit so they don't sit too close to the fixed header */
+  margin-top: var(--search-offset);
 }
 .controls-row .input-wrapper { flex: 1 1 0; min-width: 260px; }
 .controls-row .input-group { width: 100%; }
@@ -76,43 +82,18 @@ main.container { max-width: var(--max-width); padding-bottom: 3rem; }
 
 /* Make certain control labels/buttons use white text for visibility on dark hero */
 #loc-btn { color: #fff; }
-.form-check-label[for="auto-refresh"],
-.form-check-label[for="heatmap-toggle"] {
+.form-check-label[for="auto-refresh"] {
   color: #fff;
 }
 
 /* Small screens: allow wrapping to avoid overflow */
 @media (max-width: 420px) {
-  .controls-row { flex-wrap: wrap; }
+  .controls-row { flex-wrap: nowrap; }
   .controls-row .input-wrapper { min-width: 160px; }
   .controls-row .form-check { width: 100%; }
 }
 
-/* Heatmap styles */
-#heatmap-container {
-  position: relative;
-  width: 100%;
-  min-height: 220px;
-  border-radius: 12px;
-  overflow: hidden;
-  background: linear-gradient(180deg, rgba(230,240,255,0.6), rgba(240,248,255,0.4));
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.6);
-  /* Constrain the heatmap so it doesn't overlap the footer on short pages */
-  max-height: calc(100vh - 260px);
-}
-#heatmap-container canvas {
-  display: block;
-  width: 100%;
-  height: auto;
-  max-height: 100%;
-}
-.heatmap-overlay {
-  position: absolute;
-  left: 12px;
-  bottom: 8px;
-  font-size: 0.85rem;
-}
-.heatmap-switch { display:flex; align-items:center; gap:0.5rem; }
+/* Heatmap removed: styles not needed */
 
 /* Map container */
 #map {
@@ -127,15 +108,7 @@ main.container { max-width: var(--max-width); padding-bottom: 3rem; }
   #map { height: 240px; }
 }
 
-/* Canvas overlay on top of the Leaflet map */
-.leaflet-heatmap-canvas {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none; /* allow map interactions through the canvas */
-}
+/* Canvas overlay on top of the Leaflet map (removed heatmap canvas) */
 
 /* Hero video displayed inside the map container */
 #map { position: relative; }
@@ -295,8 +268,22 @@ footer { margin-top: auto; }
   backdrop-filter: saturate(120%) blur(4px);
 }
 
-/* Prevent page content from being hidden under the sticky nav on small viewports */
-main.container { padding-top: 0.75rem; }
+/* Make the header fixed so the navbar stays at the top across pages */
+header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  /* Match Bootstrap z-index for navbar so it sits above other content */
+  z-index: 1030;
+}
+
+/* Prevent page content from being hidden under the fixed header */
+/* Add the previous small padding plus space for the nav height (approx 56px) */
+/* Combines the previous small padding with the nav height variable and a small
+   search offset so the main container sits a little lower and doesn't feel
+   crowded beneath the fixed header. */
+main.container { padding-top: calc(0.75rem + var(--nav-height) + var(--search-offset)); }
 
 /* Make the forecast/hero image responsive: scale to container but cap width */
 #site-logo {
@@ -312,4 +299,102 @@ main.container { padding-top: 0.75rem; }
 .footer-links a { display: inline-flex; align-items: center; gap: 0.4rem; color: inherit; text-decoration: none; }
 .footer-icon { width: 18px; height: 18px; display: inline-block; flex: 0 0 18px; fill: currentColor; }
 .footer-links .sep { margin: 0 0.5rem; color: #999; }
+
+/* About page: globe and content alignment */
+.about-globe {
+  max-width: 320px;
+  width: 1120px;
+  height: 366px;
+  display: block;
+  border-radius: 12px;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+}
+
+.about-content { display: flex; flex-direction: column; justify-content: center; }
+
+@media (max-width: 767.98px) {
+  .about-globe { max-width: 260px; }
+  .about-content { padding-top: 0.5rem; }
+}
+
+/* Add horizontal spacing between the globe and the paragraph on md+ screens */
+@media (min-width: 768px) {
+  /* add horizontal gap between the image column and the paragraph box */
+  .about-content-box {
+    padding-left: 2.5rem; /* increased to move paragraph a bit further right */
+  }
+
+  /* make sure the image column doesn't add extra horizontal padding that collapses the gap */
+  .about-two-col > .col-md-4 {
+    padding-right: 0;
+  }
+}
+
+.about-two-col > [class*="col-"] {
+  display: flex;
+  align-items: stretch;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+/* enforce 4/8 split on md+ */
+@media (min-width: 768px) {
+  .about-two-col > .col-md-4 {
+    flex: 0 0 33.333%;
+    max-width: 33.333%;
+    padding-right: 0;
+    overflow: hidden; /* keep image contained */
+  }
+  .about-two-col > .col-md-8 {
+    flex: 0 0 66.666%;
+    max-width: 66.666%;
+  }
+}
+
+/* image: responsive, fill column height on md+, crop with object-fit */
+.about-globe {
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 12px;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+  object-fit: cover;
+}
+
+/* let image fill left column height on larger screens */
+@media (min-width: 768px) {
+  .about-globe { height: 100%; }
+  .about-content-box {
+    height: 100%;
+    display: flex;
+    align-items: center;   /* vertical center text */
+    padding-left: 2rem;    /* gap between image and paragraph */
+  }
+}
+
+/* small-screen tweaks */
+@media (max-width: 767.98px) {
+  .about-globe { max-width: 320px; margin: 0 auto; height: auto; }
+  .about-content-box { padding-top: 0.75rem; padding-bottom: 0.75rem; }
+}
+
+/* Move the contact form up slightly on wider screens without breaking mobile layout */
+@media (min-width: 768px) {
+  .contact-card {
+    margin-top: -2.5rem;
+    position: relative;
+    z-index: 5; /* keep the card above background elements */
+    transition: margin 160ms ease;
+  }
+}
+
+/* Keep normal flow on small screens */
+@media (max-width: 767.98px) {
+  .contact-card {
+    margin-top: 0;
+    position: static;
+    z-index: 1;
+  }
+}
 

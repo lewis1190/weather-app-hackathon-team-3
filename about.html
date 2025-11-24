@@ -4,18 +4,18 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Weather Card - Weather App</title>
+  <title>About — TrueWeather</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="assets/css/styles.css" rel="stylesheet">
 </head>
 
-<body class="hero-bg"
-  style="background: linear-gradient(180deg, rgba(7,7,8,0.85) 0%, rgba(255,255,255,0.85) 100%), url('assets/images/hero1.png') center/cover no-repeat fixed;">
+<body class="hero-bg">
   <header>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4 sticky-top">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
       <div class="container">
         <a class="navbar-brand" href="index.html">
           <span class="brand-logo" aria-hidden="true">
+            <!-- Simple sun + cloud SVG logo (keeps same visuals as index) -->
             <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Weather logo">
               <defs>
                 <linearGradient id="g1" x1="0" x2="1">
@@ -25,6 +25,12 @@
               </defs>
               <g>
                 <circle cx="20" cy="20" r="8" fill="url(#g1)" />
+                <g fill="#ffc857">
+                  <rect x="19" y="6" width="2" height="6" rx="1" transform="rotate(0 20 9)" />
+                  <rect x="19" y="34" width="2" height="6" rx="1" transform="rotate(0 20 37)" />
+                  <rect x="6" y="19" width="6" height="2" rx="1" transform="rotate(0 9 20)" />
+                  <rect x="34" y="19" width="6" height="2" rx="1" transform="rotate(0 37 20)" />
+                </g>
                 <path
                   d="M46 34a8 8 0 0 0-8-8 9 9 0 0 0-1 .06A10 10 0 0 0 24 20a11 11 0 0 0-1 .06A8 8 0 1 0 26 44h20a6 6 0 0 0 0-12z"
                   fill="#e6eef8" />
@@ -33,124 +39,193 @@
           </span>
           <span class="brand-text">TrueWeather</span>
         </a>
+
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu"
           aria-controls="navMenu" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
+
         <div class="collapse navbar-collapse" id="navMenu">
           <ul class="navbar-nav ms-auto">
             <li class="nav-item"><a class="nav-link" href="index.html">Forecast</a></li>
-            <li class="nav-item"><a class="nav-link active" aria-current="page" href="about.html">About</a>
-            </li>
+            <li class="nav-item"><a class="nav-link" href="#" id="favorites-link">Favorites</a></li>
+            <li class="nav-item"><a class="nav-link active" aria-current="page" href="about.html">About</a></li>
           </ul>
         </div>
       </div>
     </nav>
   </header>
 
-  <div class="row justify-content-center mb-3">
-    <div class="col-12 text-center">
-      <img src="assets/images/globe2.png" id="about-globe" alt="Globe" class="mx-auto d-block" style="max-width:200px;">
-    </div>
-  </div>
   <main class="container mb-5">
     <div class="row justify-content-center">
-      <div class="col-12 col-md-10 col-lg-8">
-        <div class="p-4 bg-white bg-opacity-85 rounded shadow-sm">
-          <p class="lead hero-lead mb-4">Our weather app is designed to give you fast, accurate, and easy-to-understand
-            forecasts wherever you are. With real-time updates, hourly predictions, and multi-day outlooks, you can plan
-            your day with confidence. Whether you’re tracking changing conditions, preparing for travel, or simply
-            curious about the skies, our intuitive design and reliable data help keep you informed.
-            Stay ahead of the weather—simple, smart, and always up to date.</p>
-          <div id="contact-form-wrapper" class="mx-auto" style="max-width:720px;">
-            <h3 class="mt-3 mb-3 text-center">Contact Us</h3>
-            <div id="contact-feedback"></div>
-            <form id="contact-form" novalidate>
-              <div class="mb-3">
-                <label for="contact-name" class="form-label">Name</label>
-                <input type="text" class="form-control" id="contact-name" placeholder="Your name" required>
-                <div class="invalid-feedback">Please enter your name.</div>
-              </div>
-              <div class="mb-3">
-                <label for="contact-email" class="form-label">Email</label>
-                <input type="email" class="form-control" id="contact-email" placeholder="you@example.com" required>
-                <div class="invalid-feedback">Please enter a valid email address.</div>
-              </div>
-              <div class="mb-3">
-                <label for="contact-message" class="form-label">Message</label>
-                <textarea class="form-control" id="contact-message" rows="4" placeholder="How can we help?" required></textarea>
-                <div class="invalid-feedback">Please enter a message.</div>
-              </div>
-              <div class="d-flex justify-content-center">
-                <button type="submit" class="btn btn-primary">Send Message</button>
-              </div>
-            </form>
+      <div class="col-12 col-md-10 col-lg-10">
+        <div class="row about-two-col align-items-stretch">
+          <div class="col-12 col-md-4 d-flex p-0">
+            <img src="assets/images/globe2.png" id="about-globe" class="img-fluid about-globe m-0" alt="Globe">
+          </div>
+          <div class="col-12 col-md-8 d-flex">
+            <div class="about-content-box p-4 bg-white bg-opacity-85 rounded shadow-sm w-100 d-flex align-items-center">
+              <p class="lead mb-0">
+                Our weather app is designed to give you fast, accurate, and easy-to-understand
+                forecasts wherever you are. With real-time updates, hourly predictions, and multi-day outlooks,
+                you can plan your day with confidence. Whether you’re tracking changing conditions,
+                preparing for travel, or simply curious about the skies, our intuitive design and reliable data help keep you informed.
+              </p>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </main>
 
-    <footer class="bg-light py-3 mt-4">
-      <div class="container d-flex flex-column flex-md-row align-items-center gap-2">
-        <div class="text-muted">&copy; <span id="year"></span> TrueWeather.</div>
-        <div class="ms-md-3 small footer-links">
-          <a href="https://www.metoffice.gov.uk/weather/warnings-and-advice" target="_blank" rel="noopener">
-            <svg class="footer-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M19.35 10.04A7 7 0 0 0 5 10.9 5.5 5.5 0 0 0 7.5 21h12a4.5 4.5 0 0 0 .89-8.96 6.98 6.98 0 0 0-.04-2z"/></svg>
-            <span>Weather warnings</span>
-          </a>
-          <span class="sep">|</span>
-          <a href="https://github.com/lewis1190/weather-app-hackathon-team-3" target="_blank" rel="noopener">
-            <svg class="footer-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.56 0-.28-.01-1.02-.02-2-3.2.7-3.88-1.54-3.88-1.54-.53-1.36-1.3-1.72-1.3-1.72-1.06-.72.08-.71.08-.71 1.17.08 1.79 1.2 1.79 1.2 1.04 1.78 2.73 1.27 3.4.97.11-.76.41-1.27.75-1.56-2.55-.29-5.24-1.28-5.24-5.72 0-1.26.45-2.29 1.2-3.1-.12-.29-.52-1.46.11-3.04 0 0 .98-.31 3.2 1.18a11.1 11.1 0 0 1 2.92-.39c.99.01 1.99.13 2.92.39 2.22-1.49 3.2-1.18 3.2-1.18.64 1.58.24 2.75.12 3.04.75.81 1.2 1.84 1.2 3.1 0 4.45-2.7 5.43-5.27 5.71.42.36.79 1.08.79 2.18 0 1.57-.01 2.84-.01 3.23 0 .31.21.68.8.56C20.71 21.39 24 17.08 24 12c0-6.35-5.15-11.5-12-11.5z"/></svg>
-            <span>GitHub</span>
-          </a>
-          <span class="sep">|</span>
-          <a href="https://www.linkedin.com/" target="_blank" rel="noopener">
-            <svg class="footer-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 3a2 2 0 1 1 0 4 2 2 0 0 1 0-4zM2 8h4v12H2zM8 8h3.8v1.7h.1c.5-.9 1.7-1.8 3.5-1.8C19.6 8 22 9.9 22 14.2V20h-4v-5.1c0-1.2-.04-2.7-1.6-2.7-1.6 0-1.9 1.3-1.9 2.6V20H8z"/></svg>
-            <span>LinkedIn</span>
-          </a>
-        </div>
-        <div class="ms-md-auto small">
-          <a href="https://openweathermap.org/" target="_blank" rel="noopener">Data: OpenWeatherMap</a>
-        </div>
+  <!-- Contact form (added below the about section) -->
+  <section class="container mb-5">
+    <div class="row justify-content-center">
+      <div class="col-12 col-md-8">
+        <form id="contact-form" class="contact-card p-4 bg-white bg-opacity-95 rounded shadow-sm" novalidate>
+          <h3 class="h5 mb-3">Contact us</h3>
+          <p class="small text-muted mb-2">For testing purposes only — this form is client-side only. Submissions are saved to your browser's Local Storage and are not sent to any server.</p>
+          <div id="contact-feedback" aria-live="polite" class="mb-2"></div>
+
+          <div class="mb-3">
+            <label for="contact-name" class="form-label">Name</label>
+            <input id="contact-name" type="text" class="form-control" required>
+          </div>
+
+          <div class="mb-3">
+            <label for="contact-email" class="form-label">Email</label>
+            <input id="contact-email" type="email" class="form-control" required>
+          </div>
+
+          <div class="mb-3">
+            <label for="contact-message" class="form-label">Message</label>
+            <textarea id="contact-message" rows="5" class="form-control" required></textarea>
+          </div>
+
+          <div class="d-flex justify-content-end">
+            <button type="submit" class="btn btn-primary">Send message</button>
+          </div>
+        </form>
       </div>
-    </footer>
+    </div>
+  </section>
+
+  <footer class="bg-light py-3 mt-4">
+    <div class="container d-flex flex-column flex-md-row align-items-center gap-2">
+      <div class="text-muted">&copy; <span id="year"></span> TrueWeather.</div>
+      <div class="ms-md-auto small">
+        <a href="https://openweathermap.org/" target="_blank" rel="noopener">Data: OpenWeatherMap</a>
+      </div>
+    </div>
+  </footer>
 
   <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/save-locations.js"></script>
   <script src="js/app.js"></script>
+
+  <!-- Favorites modal (same as homepage) -->
+  <div class="modal fade" id="favoritesModal" tabindex="-1" aria-labelledby="favoritesModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="favoritesModalLabel">Favourites</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div id="favorites-list" class="list-group small"></div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" id="clear-favorites-btn" class="btn btn-sm btn-outline-danger">Clear all</button>
+          <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script>
-    // Front-end contact form handling (no back-end integration)
     (function () {
-      const form = document.getElementById('contact-form');
-      const feedback = document.getElementById('contact-feedback');
-      if (!form) return;
-      form.addEventListener('submit', (e) => {
-        e.preventDefault();
-        // basic validation
-        let valid = true;
-        const name = document.getElementById('contact-name');
-        const email = document.getElementById('contact-email');
-        const msg = document.getElementById('contact-message');
-        [name, email, msg].forEach((el) => {
-          if (!el) return;
-          if (!el.checkValidity()) {
-            el.classList.add('is-invalid');
-            valid = false;
-          } else {
-            el.classList.remove('is-invalid');
+      function renderFavorites() {
+        const listEl = document.getElementById('favorites-list');
+        if (!listEl) return;
+        listEl.innerHTML = '';
+        try {
+          const getFn = (window.saveLocations && typeof window.saveLocations.getSavedLocations === 'function') ? window.saveLocations.getSavedLocations : (window.getSavedLocations || null);
+          const removeFn = (window.saveLocations && typeof window.saveLocations.removeLocation === 'function') ? window.saveLocations.removeLocation : (window.removeLocation || null);
+          const favorites = (typeof getFn === 'function') ? getFn() : (JSON.parse(localStorage.getItem('weatherAppFavorites') || '[]'));
+          if (!favorites || favorites.length === 0) {
+            listEl.innerHTML = '<div class="text-muted">No favourites saved</div>';
+            return;
           }
-        });
-        if (!valid) return;
-        // show success feedback
-        feedback.innerHTML = `<div class="alert alert-success" role="alert">Thanks, ${name.value.trim() || 'friend'} — your message was prepared locally and would be sent to our team in a production build.</div>`;
-        form.reset();
-      });
-      // remove validation state on input
-      ['contact-name','contact-email','contact-message'].forEach(id => {
-        const el = document.getElementById(id);
-        if (!el) return;
-        el.addEventListener('input', () => el.classList.remove('is-invalid'));
+          favorites.forEach(f => {
+            const item = document.createElement('div');
+            item.className = 'list-group-item d-flex justify-content-between align-items-center';
+            item.innerHTML = `<div>${f.city}${f.country ? ', ' + f.country : ''}</div>`;
+            const btnWrap = document.createElement('div');
+            const gotoBtn = document.createElement('button');
+            gotoBtn.className = 'btn btn-sm btn-link';
+            gotoBtn.textContent = 'Go';
+            gotoBtn.addEventListener('click', () => {
+              try {
+                if (f.lat != null && f.lon != null) {
+                  if (typeof window !== 'undefined' && window.getWeatherByCoords) {
+                    window.getWeatherByCoords(f.lat, f.lon);
+                  } else if (typeof getWeatherByCoords === 'function') {
+                    getWeatherByCoords(f.lat, f.lon);
+                  }
+                } else if (f.city) {
+                  if (typeof window !== 'undefined' && window.getWeatherByCity) {
+                    window.getWeatherByCity(f.city);
+                  } else if (typeof getWeatherByCity === 'function') {
+                    getWeatherByCity(f.city);
+                  }
+                }
+                const modalEl = document.getElementById('favoritesModal');
+                const modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+                modal.hide();
+              } catch (e) { console.warn('Go to favourite failed', e); }
+            });
+            const delBtn = document.createElement('button');
+            delBtn.className = 'btn btn-sm btn-outline-danger ms-2';
+            delBtn.textContent = 'Remove';
+            delBtn.addEventListener('click', () => {
+              try {
+                if (typeof removeFn === 'function') {
+                  removeFn(f.city, f.country);
+                } else {
+                  const favs = JSON.parse(localStorage.getItem('weatherAppFavorites') || '[]').filter(x => !(x.city === f.city && x.country === f.country));
+                  localStorage.setItem('weatherAppFavorites', JSON.stringify(favs));
+                }
+                renderFavorites();
+              } catch (e) { console.warn('Remove favourite failed', e); }
+            });
+            btnWrap.appendChild(gotoBtn);
+            btnWrap.appendChild(delBtn);
+            item.appendChild(btnWrap);
+            listEl.appendChild(item);
+          });
+        } catch (e) {
+          console.warn('Failed to render favourites', e);
+        }
+      }
+
+      document.addEventListener('DOMContentLoaded', () => {
+        const favLink = document.getElementById('favorites-link');
+        const clearBtn = document.getElementById('clear-favorites-btn');
+        if (favLink) {
+          favLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            renderFavorites();
+            const modalEl = document.getElementById('favoritesModal');
+            const modal = new bootstrap.Modal(modalEl);
+            modal.show();
+          });
+        }
+        if (clearBtn) {
+          clearBtn.addEventListener('click', () => {
+            try { localStorage.removeItem('weatherAppFavorites'); renderFavorites(); } catch (e) { console.warn('Clear favourites failed', e); }
+          });
+        }
       });
     })();
   </script>

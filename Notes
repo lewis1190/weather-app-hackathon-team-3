@@ -1,20 +1,106 @@
-# go to repo
-Set-Location 'D:\vscode-projects\weather-app-hackathon-team-3'
+Title slide
 
-# switch to existing branch (or create and switch if it doesn't exist)
-# If branch exists:
-git switch working-branch
-# If you need to create it from current branch:
-# git switch -c veena-branch
+Weather App — Team 3
+Short tagline: Fast, friendly weather forecasts with saveable favourites
+Presenter name / date
+Slide: Agenda
 
-# ensure changes are staged and committed
-git add -A
-git commit -m "Describe changes here"
+Quick overview
+Key features / UX
+Architecture & tech
+Live demo script
+Manual test highlights & known issues
+Roadmap & Q&A
 
-# update from remote (if the branch exists remotely)
-git pull --rebase origin veena-branch
+Slide: Elevator pitch
 
-# push and set upstream if first push
-git push -u origin veena-branch
-# subsequent pushes can use:
-# git push
+A lightweight, client-side weather UI that shows current, hourly, 5-day and weekly forecasts, lets users save favourite locations, and includes an interactive map (Leaflet optional).
+Designed for speed, progressive enhancement and easy offline testing.
+Slide: Key features (user-facing)
+
+Search by city (typeahead planned) and use-device location
+Current weather card with:
+Icon, temp, humidity, wind, “feels like”, and AQI
+Save as favourite / Remove favourite
+Forecast views: Hourly, 5‑day, Weekly (One Call)
+Favorites modal (persisted in localStorage)
+Responsive layout; About page with image + content; client-only contact form (testing only)
+Slide: Implementation & tech stack
+
+Frontend: plain HTML + Bootstrap 5 for layout and components
+Styling: styles.css (variables for nav height & spacing)
+App logic: app.js (main), js/5-day-forecast.js, js/weekly-forecast.js, save-locations.js
+Optional map: Leaflet (loaded only where included)
+Data: OpenWeatherMap APIs (current / forecast / air pollution)
+Persistence: localStorage for favourites and contact submissions
+Slide: High-level architecture
+
+index.html — main UI, includes scripts in this order:
+config.local.js (API key variable)
+5-day and weekly forecast module scripts
+save-locations.js
+app.js (main glue)
+app.js responsibilities:
+Build and render weather card and forecast areas
+Wire search controls, auto-refresh, and favorites interactions
+Fetch helpers and UI update functions
+save-locations.js: small module for localStorage favorites API (get/save/remove/clear)
+Slide: Live demo script (3–5 mins)
+
+Start local server (project root):
+python -m http.server 8000
+Open http://localhost:8000
+Show search bar: enter “London” → Click Search
+Show current weather card, map centering (if map enabled), hourly/daily/weekly toggles
+Click “Save as favourite” → Open Favorites modal → show saved item
+Remove favourite from modal
+Demonstrate contact form on About page (submit → shows “Thank you!” and saved to localStorage)
+Resize viewport to show responsive behavior
+Slide: Manual test highlights (quick)
+
+No API key: app warns and fails gracefully (no crashes)
+With valid key: search returns weather, forecasts populate
+Favorites persist across page reloads in localStorage
+Contact form: stored locally; shows success message “Thank you!”
+Map: only initializes where Leaflet included; app avoids crashing otherwise
+Slide: Known issues & gotchas
+
+Leaflet map requires the Leaflet CSS/JS to be present on the page — otherwise init will fail
+Some modules expose globals for compatibility (save-locations uses a window shim)
+Geocoding rate limits if using external APIs — add debounce/caching for production
+AQI requires a valid OpenWeatherMap key and may require paid permissions for One Call in some plans
+Slide: Security & privacy notes
+
+No user data is sent to a backend (contact form is client-side only)
+API keys are expected to be provided in config.local.js (not committed)
+Favorites stored in the user’s browser (localStorage)
+Slide: Roadmap / next steps
+
+Add typeahead/autocomplete with debounce + caching
+Convert to ES modules (import/export) for cleaner dependency management
+Add unit/e2e smoke tests (Puppeteer / Playwright)
+Improve favorites UI: sidebar, badges, counts
+Add server-side proxy for caching API calls & hiding keys (optional)
+Optimize map loading (lazy load Leaflet only when map visible)
+Slide: Troubleshooting tips (for demo)
+
+If map shows “L is not defined”, ensure Leaflet scripts are included in the page before app.js
+If no forecast appears, check console for 401/403 — likely missing/invalid OPENWEATHER_API_KEY
+Use DevTools → Application → Local Storage to inspect favourites/contactSubmissions
+Slide: Q&A prompts
+
+Would you like a demo of the ES-module conversion?
+Prefer favorites shown as a sidebar vs modal?
+Want an automated CI smoke test added next?
+Closing slide
+
+Repo location: (show project path or GitHub link)
+Contact: (presenter)
+Thank you — ready to demo or walk through any part of the code
+— End —
+
+If you want, I can:
+
+Generate slide text per slide as a ready-to-copy deck (PowerPoint/Google Slides friendly).
+Produce a 3-minute scripted demo transcript with exact commands and expected outputs. Which would you like?
+GPT-5 mini • 0x

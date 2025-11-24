@@ -59,9 +59,6 @@ let currentCoords = null;
 let autoRefreshTimer = null;
 let map = null;
 let mapMarker = null;
-let mapCanvas = null;
-let mapCanvasCtx = null;
-let mapHeatLayer = null;
 let mapOwmTiles = null;
 let lastForecastData = null; // cache the most recent forecast response
 
@@ -92,14 +89,82 @@ function showAlert(message, type = 'danger', timeout = 5000) {
 }
 
 async function fetchWeatherJson(url) {
+  console.debug('fetchWeatherJson ->', url);
   const res = await fetch(url);
   if (!res.ok) {
     const errBody = await res.json().catch(() => ({}));
+    console.warn('fetchWeatherJson failed', res.status, errBody);
     const msg = errBody.message || res.statusText || 'Failed fetching weather';
     throw new Error(msg);
   }
   return res.json();
 }
+
+// Fetch Air Quality Index (AQI) for given coordinates using OpenWeatherMap Air Pollution API
+async function getAirQualityByCoords(lat, lon) {
+  if (!hasValidApiKey()) return null;
+  try {
+    const url = `https://api.openweathermap.org/data/2.5/air_pollution?lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(lon)}&appid=${encodeURIComponent(API_KEY)}`;
+    const data = await fetchWeatherJson(url);
+    // data.list[0].main.aqi is 1-5 (1 Good -> 5 Very Poor)
+    if (data && Array.isArray(data.list) && data.list.length > 0 && data.list[0].main) {
+      return data.list[0].main.aqi;
+    }
+  } catch (e) {
+    console.warn('Failed to fetch air quality', e);
+  }
+  return null;
+}
+
+// Save the currently-displayed location as a favourite.
+function saveCurrentAsFavorite() {
+  const cityFromUI = (document.getElementById('weather-city') && document.getElementById('weather-city').textContent)
+    ? document.getElementById('weather-city').textContent.split(',')[0].trim()
+    : null;
+  const countryFromUI = (document.getElementById('weather-city') && document.getElementById('weather-city').textContent)
+    ? (document.getElementById('weather-city').textContent.split(',')[1] || '').trim()
+    : '';
+
+  const city = currentCity || cityFromUI;
+  const country = countryFromUI || '';
+  const lat = currentCoords && currentCoords.lat != null ? currentCoords.lat : null;
+  const lon = currentCoords && currentCoords.lon != null ? currentCoords.lon : null;
+
+  if (!city && (lat == null || lon == null)) {
+    showAlert('No location available to save. Search for a city first.', 'warning');
+    return false;
+  }
+
+  try {
+    if (typeof window !== 'undefined' && typeof window.saveLocation === 'function') {
+      const ok = window.saveLocation(lat, lon, city, country);
+      if (ok) showAlert(`Saved ${city} to favourites`, 'success');
+      else showAlert(`${city} is already in favourites`, 'info');
+      return ok;
+    }
+  } catch (e) {
+    console.warn('window.saveLocation threw', e);
+  }
+
+  // Fallback to localStorage
+  try {
+    const STORAGE_KEY = 'weatherAppFavorites';
+    let favorites = [];
+    try { favorites = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); } catch (e) { favorites = []; }
+    const exists = favorites.some(f => f.city === city && f.country === country);
+    if (exists) { showAlert(`${city} is already in favourites`, 'info'); return false; }
+    favorites.push({ lat, lon, city, country });
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(favorites));
+    showAlert(`Saved ${city} to favourites`, 'success');
+    return true;
+  } catch (e) {
+    console.warn('Failed to save favourite', e);
+    showAlert('Failed to save favourite', 'danger');
+    return false;
+  }
+}
+
+if (typeof window !== 'undefined') window.saveCurrentAsFavorite = saveCurrentAsFavorite;
 
 function updateUI(data) {
   const card = document.getElementById('weather-card');
@@ -108,6 +173,34 @@ function updateUI(data) {
   document.getElementById('weather-temp').textContent = `${Math.round(data.main.temp)}°C`;
   document.getElementById('weather-humidity').textContent = data.main.humidity;
   document.getElementById('weather-wind').textContent = (data.wind?.speed ?? '') ;
+  // Update 'feels like' if available
+  try {
+    const feelsEl = document.getElementById('weather-feelslike');
+    if (feelsEl) {
+      if (data.main && (data.main.feels_like != null)) feelsEl.textContent = `${Math.round(data.main.feels_like)}°C`;
+      else feelsEl.textContent = '--';
+    }
+  } catch (e) { /* ignore */ }
+  // Kick off AQI fetch for the current coordinates (populate #weather-aqi when available)
+  try {
+    const aqiEl = document.getElementById('weather-aqi');
+    if (aqiEl) {
+      aqiEl.textContent = 'Loading...';
+      const lat = data?.coord?.lat; const lon = data?.coord?.lon;
+      if (lat != null && lon != null) {
+        getAirQualityByCoords(lat, lon).then(aqi => {
+          try {
+            if (aqi == null) { aqiEl.textContent = 'N/A'; return; }
+            // Map numeric AQI (1-5) to friendly labels
+            const map = {1: 'Good', 2: 'Fair', 3: 'Moderate', 4: 'Poor', 5: 'Very Poor'};
+            aqiEl.textContent = `${aqi} (${map[aqi] || 'Unknown'})`;
+          } catch (e) { aqiEl.textContent = 'N/A'; }
+        }).catch(() => { if (aqiEl) aqiEl.textContent = 'N/A'; });
+      } else {
+        aqiEl.textContent = 'N/A';
+      }
+    }
+  } catch (e) { /* ignore */ }
   const icon = data.weather?.[0]?.icon;
   if (icon) {
     document.getElementById('weather-icon').src = `https://openweathermap.org/img/wn/${icon}@2x.png`;
@@ -140,6 +233,44 @@ function ensureWeatherCardExists() {
     const main = document.querySelector('main') || document.body;
     main.insertAdjacentHTML('beforeend', markup + forecastWrap + hourlyWrap + weeklyWrap);
   }
+  // Ensure the save button exists in the newly-inserted card and wire handler
+  try {
+    const cardBody = document.querySelector('#weather-card .card-body');
+    if (cardBody) {
+      // Ensure the right-side container exists, then add Feels-like and AQI first,
+      // with the Save button appended below them (per UI ordering request).
+      const right = cardBody.querySelector('.ms-auto.text-end') || cardBody;
+      if (right) {
+        // Append 'Feels like' and 'AQI' displays if missing
+        if (!document.getElementById('weather-feelslike')) {
+          const fwrap = document.createElement('div');
+          fwrap.className = 'mt-2';
+          fwrap.innerHTML = `Feels like: <span id="weather-feelslike">--</span>`;
+          right.appendChild(fwrap);
+        }
+        if (!document.getElementById('weather-aqi')) {
+          const awrap = document.createElement('div');
+          awrap.className = 'mt-2';
+          awrap.innerHTML = `AQI: <span id="weather-aqi">--</span>`;
+          right.appendChild(awrap);
+        }
+
+        // Then append save button below the AQI/Feels-like elements
+        if (!document.getElementById('save-location-btn')) {
+          const btn = document.createElement('button');
+          btn.id = 'save-location-btn';
+          btn.type = 'button';
+          btn.className = 'btn btn-sm btn-outline-primary';
+          btn.textContent = 'Save as favourite';
+          const wrap = document.createElement('div');
+          wrap.className = 'mt-2';
+          wrap.appendChild(btn);
+          right.appendChild(wrap);
+          btn.addEventListener('click', () => { try { saveCurrentAsFavorite(); } catch (e) { console.warn('Save favourite failed', e); } });
+        }
+      }
+    }
+  } catch (e) { /* ignore DOM wiring errors */ }
 }
 
 // 5-day forecast helpers moved to `js/5-day-forecast.js` to keep app.js smaller.
@@ -197,7 +328,7 @@ function render5DayForecast(forecastData) {
   // show 5-day container and hide hourly when rendering daily view
   const hourlyContainer = document.getElementById('forecast-hourly');
   const dailyContainer = document.getElementById('forecast-5day');
-  if (hourlyContainer) hourlyContainer.style.display = 'none';
+    if (hourlyContainer) hourlyContainer.style.display = 'none';
   if (dailyContainer) dailyContainer.style.display = 'flex';
   // update button active state
   try {
@@ -205,7 +336,7 @@ function render5DayForecast(forecastData) {
     const dailyBtnEl = document.getElementById('dailyButton');
     if (dailyBtnEl) { dailyBtnEl.classList.add('active'); dailyBtnEl.setAttribute('aria-pressed', 'true'); }
     if (hourlyBtnEl) { hourlyBtnEl.classList.remove('active'); hourlyBtnEl.setAttribute('aria-pressed', 'false'); }
-  } catch (e) { /* ignore */ }
+      } catch (e) { /* ignore */ }
   // Group forecast entries by date string YYYY-MM-DD
   const groups = {};
   forecastData.list.forEach(item => {
@@ -219,17 +350,31 @@ function render5DayForecast(forecastData) {
   const container = document.getElementById('forecast-5day');
   if (!container) return;
   container.innerHTML = '';
+  // Iterate over each date group and render a summary card
   dates.forEach(dateStr => {
-    const entries = groups[dateStr];
-    // pick midday entry if available
-    let rep = entries.find(e => new Date(e.dt * 1000).getHours() === 12) || entries[Math.floor(entries.length/2)];
+    const entries = groups[dateStr] || [];
+    if (entries.length === 0) return;
+
+    // compute min/max temps for the day (use temp_min/temp_max when available)
     let min = Infinity, max = -Infinity;
-    entries.forEach(e => { min = Math.min(min, e.main.temp_min); max = Math.max(max, e.main.temp_max); });
-    if (!isFinite(min)) min = rep.main.temp;
-    if (!isFinite(max)) max = rep.main.temp;
+    entries.forEach(e => {
+      const tMin = (e.main && (e.main.temp_min != null)) ? e.main.temp_min : (e.main ? e.main.temp : Infinity);
+      const tMax = (e.main && (e.main.temp_max != null)) ? e.main.temp_max : (e.main ? e.main.temp : -Infinity);
+      min = Math.min(min, tMin);
+      max = Math.max(max, tMax);
+    });
+    if (!isFinite(min) && entries[0] && entries[0].main) min = entries[0].main.temp;
+    if (!isFinite(max) && entries[0] && entries[0].main) max = entries[0].main.temp;
+
+    // pick a representative entry (midday or first) for icon/description
+    let rep = entries.find(it => {
+      try { return new Date(it.dt * 1000).getHours() === 12; } catch (e) { return false; }
+    });
+    if (!rep) rep = entries[Math.floor(entries.length / 2)] || entries[0];
+
     const dayName = new Date(dateStr).toLocaleDateString(undefined, { weekday: 'short' });
-    const icon = rep.weather && rep.weather[0] && rep.weather[0].icon ? rep.weather[0].icon : '';
-    const desc = rep.weather && rep.weather[0] && rep.weather[0].description ? rep.weather[0].description : '';
+    const icon = rep && rep.weather && rep.weather[0] && rep.weather[0].icon ? rep.weather[0].icon : '';
+    const desc = rep && rep.weather && rep.weather[0] && rep.weather[0].description ? rep.weather[0].description : '';
 
     const el = document.createElement('div');
     el.className = 'forecast-card p-3 text-center';
@@ -254,21 +399,6 @@ function initMap() {
       attribution: '&copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors'
     }).addTo(map);
 
-    // Create a demo Leaflet heat layer if the plugin is present (do NOT add by default)
-    try {
-      if (typeof L !== 'undefined' && typeof L.heatLayer === 'function') {
-        const heatData = [
-          [37.782, -122.447, 0.8],
-          [37.782, -122.445, 0.7],
-          [37.782, -122.443, 0.9]
-        ];
-        // create the layer but do not add it immediately — toggle will control visibility
-        mapHeatLayer = L.heatLayer(heatData, { radius: 25, blur: 15, maxZoom: 17 });
-      }
-    } catch (e) {
-      console.warn('Leaflet heat layer not available', e);
-    }
-
     // Add OpenWeatherMap tiles overlay (requires a valid OpenWeatherMap API key).
     // Template: http://maps.openweathermap.org/maps/2.0/weather/{op}/{z}/{x}/{y}?appid={API key}
     try {
@@ -283,78 +413,7 @@ function initMap() {
       console.warn('Could not add OpenWeatherMap tile layer', e);
     }
 
-    // create a canvas overlay in the overlayPane
-    try {
-      mapCanvas = L.DomUtil.create('canvas', 'leaflet-heatmap-canvas', map.getPanes().overlayPane);
-      mapCanvas.id = 'map-canvas-overlay';
-      mapCanvasCtx = mapCanvas.getContext && mapCanvas.getContext('2d');
-      // prevent events on canvas from blocking map interactions
-      L.DomEvent.disableClickPropagation(mapCanvas);
-      L.DomEvent.disableScrollPropagation(mapCanvas);
-
-      function resizeMapCanvas() {
-        if (!mapCanvas) return;
-        const size = map.getSize();
-        const ratio = window.devicePixelRatio || 1;
-        mapCanvas.style.width = size.x + 'px';
-        mapCanvas.style.height = size.y + 'px';
-        mapCanvas.width = Math.round(size.x * ratio);
-        mapCanvas.height = Math.round(size.y * ratio);
-        if (mapCanvasCtx) mapCanvasCtx.setTransform(ratio, 0, 0, ratio, 0, 0);
-      }
-
-      function clearMapCanvas() {
-        if (!mapCanvasCtx) return;
-        mapCanvasCtx.clearRect(0,0,mapCanvas.width, mapCanvas.height);
-      }
-
-      function drawMapCanvasDemo() {
-        if (!map || !mapCanvasCtx) return;
-        clearMapCanvas();
-        const size = map.getSize();
-        // Draw demo overlay: semi-transparent radial blobs at a few lat/lng positions
-        const demoPoints = [
-          {lat: 51.5, lon: -0.12}, // London
-          {lat: 40.7, lon: -74.0}, // NYC
-          {lat: 35.7, lon: 139.7}, // Tokyo
-          {lat: -33.9, lon: 151.2}, // Sydney
-        ];
-        mapCanvasCtx.globalCompositeOperation = 'lighter';
-        demoPoints.forEach((p, i) => {
-          try {
-            const pt = map.latLngToContainerPoint([p.lat, p.lon]);
-            const gradient = mapCanvasCtx.createRadialGradient(pt.x, pt.y, 0, pt.x, pt.y, Math.max(60, Math.min(size.x, size.y) * 0.12));
-            const alpha = 0.35 + (i % 2) * 0.15;
-            gradient.addColorStop(0, `rgba(255,${80 + i*30},0,${alpha})`);
-            gradient.addColorStop(0.6, `rgba(255,${40 + i*20},0,${alpha*0.6})`);
-            gradient.addColorStop(1, 'rgba(255,255,255,0)');
-            mapCanvasCtx.fillStyle = gradient;
-            mapCanvasCtx.beginPath();
-            mapCanvasCtx.arc(pt.x, pt.y, Math.max(60, Math.min(size.x, size.y) * 0.12), 0, Math.PI * 2);
-            mapCanvasCtx.fill();
-          } catch (e) {
-            // latLngToContainerPoint can throw if map not ready
-          }
-        });
-        mapCanvasCtx.globalCompositeOperation = 'source-over';
-      }
-
-      // redraw on relevant map events
-      map.on('move resize zoomend viewreset', () => {
-        resizeMapCanvas();
-        drawMapCanvasDemo();
-      });
-      // initial sizing + draw
-      setTimeout(() => {
-        if (map) {
-          resizeMapCanvas();
-          drawMapCanvasDemo();
-        }
-      }, 200);
-    } catch (err) {
-      console.warn('Could not create map canvas overlay', err);
-    }
-    // end canvas overlay setup
+    // map canvas overlay / demo removed (heatmap feature removed)
   } catch (err) {
     console.warn('Leaflet map could not be initialized', err);
   }
@@ -386,6 +445,7 @@ async function getWeatherByCity(city) {
   }
   try {
     const url = buildWeatherUrl({ city });
+    console.debug('getWeatherByCity -> url:', url);
     const data = await fetchWeatherJson(url);
     currentCity = data.name;
     currentCoords = { lat: data.coord.lat, lon: data.coord.lon };
@@ -445,8 +505,11 @@ document.addEventListener('DOMContentLoaded', () => {
   // Guarded event attachments so js/app.js can safely run on pages without the controls
   if (searchBtn) {
     searchBtn.addEventListener('click', async () => {
-      const city = cityInput ? cityInput.value.trim() : '';
+      // re-query the input element at click-time in case DOM changed
+      const cityInputEl = document.getElementById('city-input');
+      const city = cityInputEl ? cityInputEl.value.trim() : '';
       const respEl = document.getElementById('search-response');
+      console.debug('Search button clicked; city=', city);
       if (!city) {
         showAlert('Please enter a city name', 'warning');
         if (respEl) respEl.textContent = '';
@@ -578,87 +641,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
   // Map image toggle removed — no-op
-  // Heatmap toggle handling
-  const heatToggle = document.getElementById('heatmap-toggle');
-  const heatContainer = document.getElementById('heatmap-container');
-  const heatCanvas = document.getElementById('heatmap-canvas');
-
-  function resizeCanvas() {
-    if (!heatCanvas) return;
-    const rect = heatContainer.getBoundingClientRect();
-    heatCanvas.width = Math.max(300, Math.floor(rect.width));
-    heatCanvas.height = Math.max(200, Math.floor(rect.height));
-  }
-
-  function drawHeatmapDemo() {
-    if (!heatCanvas) return;
-    const ctx = heatCanvas.getContext('2d');
-    const w = heatCanvas.width;
-    const h = heatCanvas.height;
-    ctx.clearRect(0,0,w,h);
-    // draw background subtle
-    ctx.fillStyle = 'rgba(255,255,255,0.0)';
-    ctx.fillRect(0,0,w,h);
-
-    // draw several soft colored circles as demo hotspots
-    const hotspots = 6;
-    for (let i = 0; i < hotspots; i++) {
-      const gx = Math.random() * w;
-      const gy = Math.random() * h;
-      const r = (Math.min(w,h) * (0.12 + Math.random()*0.18));
-      const g = ctx.createRadialGradient(gx, gy, 0, gx, gy, r);
-      const alpha = 0.35 + Math.random()*0.25;
-      // color ramp from yellow -> red
-      g.addColorStop(0, `rgba(255, ${160 + Math.floor(Math.random()*80)}, 0, ${alpha})`);
-      g.addColorStop(0.6, `rgba(255, ${80 + Math.floor(Math.random()*60)}, 20, ${alpha*0.6})`);
-      g.addColorStop(1, 'rgba(255,255,255,0)');
-      ctx.globalCompositeOperation = 'lighter';
-      ctx.fillStyle = g;
-      ctx.beginPath();
-      ctx.arc(gx, gy, r, 0, Math.PI * 2);
-      ctx.fill();
-    }
-    ctx.globalCompositeOperation = 'source-over';
-  }
-
-  function showHeatmap(enabled) {
-    if (!heatContainer) return;
-    if (enabled) {
-      heatContainer.classList.remove('d-none');
-      resizeCanvas();
-      drawHeatmapDemo();
-      // also enable the Leaflet heat layer if present
-      try {
-        if (map && mapHeatLayer && !map.hasLayer(mapHeatLayer)) map.addLayer(mapHeatLayer);
-      } catch (e) { console.warn('Could not add Leaflet heat layer', e); }
-      try { localStorage.setItem('heatmapEnabled', '1'); } catch (e) { /* ignore */ }
-    } else {
-      heatContainer.classList.add('d-none');
-      try {
-        if (map && mapHeatLayer && map.hasLayer(mapHeatLayer)) map.removeLayer(mapHeatLayer);
-      } catch (e) { console.warn('Could not remove Leaflet heat layer', e); }
-      try { localStorage.setItem('heatmapEnabled', '0'); } catch (e) { /* ignore */ }
-    }
-  }
-
-  if (heatToggle) {
-    heatToggle.addEventListener('change', (e) => showHeatmap(e.target.checked));
-    // restore previous state from localStorage
-    try {
-      const saved = localStorage.getItem('heatmapEnabled');
-      if (saved === '1') {
-        heatToggle.checked = true;
-        showHeatmap(true);
-      }
-    } catch (e) { /* ignore */ }
-
-    window.addEventListener('resize', () => {
-      try {
-        if (!heatContainer.classList.contains('d-none')) { resizeCanvas(); drawHeatmapDemo(); }
-        if (map && mapHeatLayer && map.hasLayer(mapHeatLayer) && typeof map.invalidateSize === 'function') map.invalidateSize();
-      } catch (e) { /* ignore */ }
-    });
-  }
+  // Heatmap feature removed — no heatmap toggle or demo canvas
 
   // If this page is the alerts page or the standalone weather card page, handle any pending city search or pending alert
   try {
@@ -691,4 +674,60 @@ document.addEventListener('DOMContentLoaded', () => {
   } catch (e) {
     console.warn('Error handling pending sessionStorage values', e);
   }
+});
+
+// Front-end-only contact form handling (no backend)
+document.addEventListener('DOMContentLoaded', () => {
+  try {
+    const form = document.getElementById('contact-form');
+    if (!form) return;
+    const feedback = document.getElementById('contact-feedback');
+    const nameEl = document.getElementById('contact-name');
+    const emailEl = document.getElementById('contact-email');
+    const msgEl = document.getElementById('contact-message');
+
+    function showFeedback(text, type = 'success', timeout = 6000) {
+      if (!feedback) return;
+      feedback.innerHTML = `<div class="alert alert-${type} py-1">${text}</div>`;
+      if (timeout) setTimeout(() => { if (feedback) feedback.innerHTML = ''; }, timeout);
+    }
+
+    function isValidEmail(v) {
+      if (!v) return false;
+      // simple email pattern
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+    }
+
+    form.addEventListener('submit', (ev) => {
+      ev.preventDefault();
+      try {
+        const name = (nameEl && nameEl.value || '').trim();
+        const email = (emailEl && emailEl.value || '').trim();
+        const message = (msgEl && msgEl.value || '').trim();
+
+        if (!name) { showFeedback('Please enter your name.', 'warning'); return; }
+        if (!isValidEmail(email)) { showFeedback('Please enter a valid email address.', 'warning'); return; }
+        if (!message || message.length < 6) { showFeedback('Please enter a message (at least 6 characters).', 'warning'); return; }
+
+        // Save submission to localStorage (front-end only)
+        const STORAGE_KEY = 'contactSubmissions';
+        const now = new Date().toISOString();
+        const entry = { name, email, message, createdAt: now };
+        try {
+          const list = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+          list.push(entry);
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+        } catch (e) {
+          console.warn('Failed to persist contact submission', e);
+        }
+
+        // Show confirmation and clear form
+        showFeedback('Thank you!', 'success', 8000);
+        form.reset();
+      } catch (e) {
+        console.warn('Contact form submit failed', e);
+        showFeedback('Failed to save message locally. Please try again.', 'danger');
+      }
+    });
+  } catch (e) { console.warn('Contact form init failed', e); }
 });
